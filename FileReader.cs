@@ -10,7 +10,7 @@ namespace GUI
 {
     public static class FileReader
     {
-        private static string errorMessage = "Something went wrong";
+        private static string errorMessage = "Something went wrong.";
 
         public static string ReadFromUrl(string url)
         {
