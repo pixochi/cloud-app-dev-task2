@@ -59,6 +59,15 @@ namespace GUI
                 foreach (var n in configFile.Processors) {
                     printRow($"{n.Key}, {n.Value.ToString()}");
                 }
+
+                this.printRow();
+                this.printRow("From Service:");
+                var client = new AllocServiceReference.AllocServiceClient();
+                var allocInput = new AllocServiceReference.AllocInput(configFile.Tasks, configFile.Processors, configFile.MaxDuration, configFile.RefFrequency);
+                var response = client.GetAllocations(allocInput);
+                this.printRow(response.RefFrequency.ToString());
+                this.printRow(response.Tasks["1"].ToString());
+
             }
             catch (Exception ex) {
                 this.clearOutput();
