@@ -10,9 +10,16 @@ namespace WcfService
 {
     public class AllocService : IAllocService
     {
-        public AllocInput GetAllocations(AllocInput allocInput)
+        public List<AllocOutput> GetAllocations(AllocInput allocInput)
         {
-            return allocInput;
+            var possibleAllocations = new List<AllocOutput>();
+            var processors = new Dictionary<string, List<bool>>();
+            var processor1 = new List<bool>() {true, true, false};
+            processors.Add("1", processor1);
+            var allocOutput = new AllocOutput("1", 4.2f, 55, processors);
+            possibleAllocations.Add(allocOutput);
+
+            return possibleAllocations;
         }
     }
 }

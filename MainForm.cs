@@ -63,17 +63,17 @@ namespace GUI
                 this.printRow();
                 this.printRow("From Service:");
                 var client = new AllocServiceReference.AllocServiceClient();
-                var allocInput = new AllocServiceReference.AllocInput(configFile.Tasks, configFile.Processors, configFile.MaxDuration, configFile.RefFrequency);
-                var response = client.GetAllocations(allocInput);
-                this.printRow(response.RefFrequency.ToString());
-                this.printRow(response.Tasks["1"].ToString());
+                var allocInput = new AllocServiceReference.AllocInput(configFile.Tasks, configFile.Processors, configFile.MaxDuration, configFile.RefFrequency, configFile.Coefficients);
+                List<AllocServiceReference.AllocOutput> allocations = client.GetAllocations(allocInput);
+
+                string formattedAllocations = Visualizer.Allocations(allocations);
+                this.printRow(formattedAllocations);
 
             }
             catch (Exception ex) {
                 this.clearOutput();
                 this.printRow(ex.Message);
-            }
-            
+            } 
         }
     }
 }

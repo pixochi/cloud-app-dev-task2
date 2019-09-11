@@ -12,7 +12,7 @@ namespace WcfService
     public interface IAllocService
     {
         [OperationContract]
-        AllocInput GetAllocations(AllocInput allocInput);
+        List<AllocOutput> GetAllocations(AllocInput allocInput);
     }
 
 
@@ -23,13 +23,15 @@ namespace WcfService
         private float refFrequency;
         private Dictionary<string, float> tasks;
         private Dictionary<string, float> processors;
+        private List<float> coefficients;
 
-        public AllocInput(Dictionary<string, float> tasks, Dictionary<string, float> processors, float maxDuration, float refFrequency)
+        public AllocInput(float maxDuration, float refFrequency, Dictionary<string, float> tasks, Dictionary<string, float> processors, List<float> coefficients)
         {
-            this.tasks = tasks;
-            this.processors = processors;
             this.maxDuration = maxDuration;
             this.refFrequency = refFrequency;
+            this.tasks = tasks;
+            this.processors = processors;
+            this.coefficients = coefficients;
         }
 
         [DataMember]
@@ -43,5 +45,35 @@ namespace WcfService
 
         [DataMember]
         public Dictionary<string, float> Processors { get => processors; set => processors = value; }
+        public List<float> Coefficients { get => coefficients; set => coefficients = value; }
+    }
+
+    [DataContract]
+    public class AllocOutput
+    {
+        private string allocationId;
+        private float timeConsumed;
+        private float energyConsumed;
+        private Dictionary<string, List<bool>> processors;
+
+        public AllocOutput(string allocationId, float timeConsumed, float energyConsumed, Dictionary<string, List<bool>> processors)
+        {
+            this.allocationId = allocationId;
+            this.timeConsumed = timeConsumed;
+            this.energyConsumed = energyConsumed;
+            this.processors = processors;
+        }
+
+        [DataMember]
+        public string AllocationId { get => allocationId; set => allocationId = value; }
+
+        [DataMember]
+        public float TimeConsumed { get => timeConsumed; set => timeConsumed = value; }
+
+        [DataMember]
+        public float EnergyConsumed { get => energyConsumed; set => energyConsumed = value; }
+
+        [DataMember]
+        public Dictionary<string, List<bool>> Processors { get => processors; set => processors = value; }
     }
 }

@@ -15,14 +15,16 @@ namespace GUI
         private float refFrequency;
         private Dictionary<string, float> tasks;
         private Dictionary<string, float> processors;
+        private List<float> coefficients;
 
         public ConfigFile(string configFileContent)
         {
-            this.Content = configFileContent;
-            this.MaxDuration = ConfigFileParser.GetMaximumDuration(configFileContent);
-            this.RefFrequency = ConfigFileParser.GetRuntimeReferenceFrequency(configFileContent);
-            this.Tasks = ConfigFileParser.GetTasks(configFileContent);
-            this.Processors = ConfigFileParser.GetProcessors(configFileContent);
+            this.content = configFileContent;
+            this.maxDuration = ConfigFileParser.GetMaximumDuration(configFileContent);
+            this.refFrequency = ConfigFileParser.GetRuntimeReferenceFrequency(configFileContent);
+            this.tasks = ConfigFileParser.GetTasks(configFileContent);
+            this.processors = ConfigFileParser.GetProcessors(configFileContent);
+            this.coefficients = ConfigFileParser.GetCoefficients(configFileContent);
         }
 
         public string Content { get => content; set => content = value; }
@@ -31,5 +33,6 @@ namespace GUI
         public float RefFrequency { get => refFrequency; set => refFrequency = value; }
         public Dictionary<string, float> Tasks { get => tasks; set => tasks = value; }
         public Dictionary<string, float> Processors { get => processors; set => processors = value; }
+        public List<float> Coefficients { get => coefficients; set => coefficients = value; }
     }
 }
