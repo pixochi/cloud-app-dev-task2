@@ -37,26 +37,34 @@ namespace GUI
             this.startReading();
 
             string fileUrl = urlInputBox.Text.Trim();
-            string fileContent = FileReader.ReadFromUrl(fileUrl);
-            this.clearOutput();
 
-            ConfigFile configFile = new ConfigFile(fileContent);
-            this.printRow($"Max duration: {configFile.MaxDuration}");
-            this.printRow($"Ref freq.: {configFile.RefFrequency}");
+            try {
+                string fileContent = FileReader.ReadFromUrl(fileUrl);
+                this.clearOutput();
 
-            this.printRow();
-            this.printRow("Tasks:");
+                ConfigFile configFile = new ConfigFile(fileContent);
+                this.printRow($"Max duration: {configFile.MaxDuration}");
+                this.printRow($"Ref freq.: {configFile.RefFrequency}");
 
-            foreach (var n in configFile.Tasks) {
-                printRow($"{n.Key}, {n.Value.ToString()}");
+                this.printRow();
+                this.printRow("Tasks:");
+
+                foreach (var n in configFile.Tasks) {
+                    printRow($"{n.Key}, {n.Value.ToString()}");
+                }
+
+                this.printRow();
+                this.printRow("Processors:");
+
+                foreach (var n in configFile.Processors) {
+                    printRow($"{n.Key}, {n.Value.ToString()}");
+                }
             }
-
-            this.printRow();
-            this.printRow("Processors:");
-
-            foreach (var n in configFile.Processors) {
-                printRow($"{n.Key}, {n.Value.ToString()}");
+            catch (Exception ex) {
+                this.clearOutput();
+                this.printRow(ex.Message);
             }
+            
         }
     }
 }

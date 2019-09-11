@@ -10,16 +10,24 @@ namespace GUI
 {
     public static class FileReader
     {
+        private static string errorMessage = "Something went wrong";
+
         public static string ReadFromUrl(string url)
         {
-            WebClient client = new WebClient();
-            Stream stream = client.OpenRead(url);
-            StreamReader reader = new StreamReader(stream);
-            String fileContent = reader.ReadToEnd();
-            stream.Close();
-            reader.Close();
+            try {
+                WebClient client = new WebClient();
+                Stream stream = client.OpenRead(url);
+                StreamReader reader = new StreamReader(stream);
+                String fileContent = reader.ReadToEnd();
+                stream.Close();
+                reader.Close();
 
-            return fileContent;
+                return fileContent;
+            }
+            catch (Exception) {
+                throw new FileNotFoundException(errorMessage);
+            }
+            
         }
     }
 }

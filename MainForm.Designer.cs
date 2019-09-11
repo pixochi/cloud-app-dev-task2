@@ -35,25 +35,25 @@
             // mainFormOutput
             // 
             this.mainFormOutput.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.mainFormOutput.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainFormOutput.Location = new System.Drawing.Point(0, 0);
+            this.mainFormOutput.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.mainFormOutput.Location = new System.Drawing.Point(0, 28);
             this.mainFormOutput.Multiline = true;
             this.mainFormOutput.Name = "mainFormOutput";
             this.mainFormOutput.ReadOnly = true;
             this.mainFormOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.mainFormOutput.Size = new System.Drawing.Size(770, 311);
+            this.mainFormOutput.Size = new System.Drawing.Size(770, 283);
             this.mainFormOutput.TabIndex = 1;
             // 
             // urlInputBox
             // 
-            this.urlInputBox.Location = new System.Drawing.Point(0, 28);
+            this.urlInputBox.Location = new System.Drawing.Point(0, 0);
             this.urlInputBox.Name = "urlInputBox";
             this.urlInputBox.Size = new System.Drawing.Size(670, 22);
             this.urlInputBox.TabIndex = 2;
             // 
             // getAllocationsButton
             // 
-            this.getAllocationsButton.Location = new System.Drawing.Point(676, 28);
+            this.getAllocationsButton.Location = new System.Drawing.Point(676, 0);
             this.getAllocationsButton.Name = "getAllocationsButton";
             this.getAllocationsButton.Size = new System.Drawing.Size(69, 27);
             this.getAllocationsButton.TabIndex = 3;
