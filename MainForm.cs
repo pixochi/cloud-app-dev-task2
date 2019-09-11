@@ -35,7 +35,6 @@ namespace GUI
         private void getAllocationsButton_Click(object sender, EventArgs e)
         {
             this.startReading();
-
             string fileUrl = urlInputBox.Text.Trim();
 
             try {
