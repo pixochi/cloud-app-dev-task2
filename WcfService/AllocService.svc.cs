@@ -97,6 +97,9 @@ namespace WcfService
             var tasksByCompletionTime = getTasksByCompletionTime(allocInput.Tasks, allocInput.Processors, allocInput.RefFrequency);
             Dictionary<string, List<string>> processorsWithTasks = new Dictionary<string, List<string>>();
             Dictionary<string, float> processorsComputationalTime = new Dictionary<string, float>();
+            var allocations = new List<AllocOutput>();
+            float energyConsumedTotal = 0f;
+            float timeConsumedTotal = 0f;
 
 
             while (tasksByCompletionTime.Count != 0) {
@@ -115,17 +118,36 @@ namespace WcfService
                         }
                     }
 
-                    processorsWithTasks[optimalProcessorId].Add(taskToAllocateId);
+                    if (processorsWithTasks.ContainsKey(optimalProcessorId)) {
+                        processorsWithTasks[optimalProcessorId].Add(taskToAllocateId);
+                    }
+                    else {
+                        processorsWithTasks.Add(optimalProcessorId, new List<string>() { taskToAllocateId });
+                    }
+
+                    if (processorsComputationalTime.ContainsKey(optimalProcessorId)) {
+                        processorsComputationalTime[optimalProcessorId] = processorsComputationalTime[optimalProcessorId] + tasksByCompletionTime[taskToAllocateId][optimalProcessorId];
+                    }
+                    else {
+                        processorsComputationalTime.Add(optimalProcessorId, tasksByCompletionTime[taskToAllocateId][optimalProcessorId]);
+                    }
+
+                    energyConsumedTotal += AllocationHelper.GetEnergyConsumedPerTask(allocInput.Coefficients, allocInput.Processors[optimalProcessorId], tasksByCompletionTime[taskToAllocateId][optimalProcessorId]);
                     tasksByCompletionTime.Remove(taskToAllocateId);
-                    processorsComputationalTime[optimalProcessorId] = processorsComputationalTime[optimalProcessorId] + tasksByCompletionTime[taskToAllocateId][optimalProcessorId];
                 }
                 else {
                     // assign the last unallocated task to the processor with the minimum completion time
                     processorsWithTasks[tasksByCompletionTime.First().Value.First().Key].Add(tasksByCompletionTime.First().Key);
-                    tasksByCompletionTime.Remove(tasksByCompletionTime.First().Key);
                     processorsComputationalTime[tasksByCompletionTime.First().Value.First().Key] = processorsComputationalTime[tasksByCompletionTime.First().Value.First().Key] + tasksByCompletionTime.First().Value.First().Value;
+                    tasksByCompletionTime.Remove(tasksByCompletionTime.First().Key);
                 }
             }
+
+            timeConsumedTotal = processorsComputationalTime.Values.Max();
+            var allocOutput = new AllocOutput("1", timeConsumedTotal, energyConsumedTotal, processorsWithTasks);
+            allocations.Add(allocOutput);
+
+            return allocations;
         }
 
         private Dictionary<string, Dictionary<string, float>> getTasksByCompletionTime(Dictionary<string, float> tasks, Dictionary<string, float> processors, float refFrequency)

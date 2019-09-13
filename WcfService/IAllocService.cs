@@ -13,6 +13,9 @@ namespace WcfService
     {
         [OperationContract]
         List<AllocOutput> GetAllocations(AllocInput allocInput);
+
+        [OperationContract]
+        List<AllocOutput> GetAllocationsSortMid(AllocInput allocInput);
     }
 
 
@@ -45,6 +48,8 @@ namespace WcfService
 
         [DataMember]
         public Dictionary<string, float> Processors { get => processors; set => processors = value; }
+
+        [DataMember]
         public List<float> Coefficients { get => coefficients; set => coefficients = value; }
     }
 
@@ -54,9 +59,9 @@ namespace WcfService
         private string allocationId;
         private float timeConsumed;
         private float energyConsumed;
-        private Dictionary<string, List<bool>> processors;
+        private Dictionary<string, List<string>> processors;
 
-        public AllocOutput(string allocationId, float timeConsumed, float energyConsumed, Dictionary<string, List<bool>> processors)
+        public AllocOutput(string allocationId, float timeConsumed, float energyConsumed, Dictionary<string, List<string>> processors)
         {
             this.allocationId = allocationId;
             this.timeConsumed = timeConsumed;
@@ -74,6 +79,6 @@ namespace WcfService
         public float EnergyConsumed { get => energyConsumed; set => energyConsumed = value; }
 
         [DataMember]
-        public Dictionary<string, List<bool>> Processors { get => processors; set => processors = value; }
+        public Dictionary<string, List<string>> Processors { get => processors; set => processors = value; }
     }
 }

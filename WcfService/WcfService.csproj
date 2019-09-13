@@ -67,6 +67,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllocationHelper.cs" />
     <Compile Include="AllocService.svc.cs">
       <DependentUpon>AllocService.svc</DependentUpon>
     </Compile>
