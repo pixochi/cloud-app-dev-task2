@@ -7,11 +7,16 @@ using System.ServiceModel.Web;
 using System.Text;
 using System.Collections.Specialized;
 using System.Collections;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace WcfService
 {
     public class AllocService : IAllocService
     {
+
+        private static int MAX_RUNTIME_MS = 5000;
+
         // Based on:
         // https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4642166/
         public List<AllocOutput> GetAllocations(AllocInput allocInput)
@@ -94,59 +99,72 @@ namespace WcfService
 
         public List<AllocOutput> GetAllocationsSortMid(AllocInput allocInput)
         {
-            var tasksByCompletionTime = getTasksByCompletionTime(allocInput.Tasks, allocInput.Processors, allocInput.RefFrequency);
-            Dictionary<string, List<string>> processorsWithTasks = new Dictionary<string, List<string>>();
-            Dictionary<string, float> processorsComputationalTime = new Dictionary<string, float>();
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+
             var allocations = new List<AllocOutput>();
-            float energyConsumedTotal = 0f;
-            float timeConsumedTotal = 0f;
+            float minEnergyConsumed = 0;
+            var tasksByCompletionTime = getTasksByCompletionTime(allocInput.Tasks, allocInput.Processors, allocInput.RefFrequency);
+
+            while (watch.ElapsedMilliseconds < MAX_RUNTIME_MS) {
+                Dictionary<string, List<string>> processorsWithTasks = new Dictionary<string, List<string>>();
+                Dictionary<string, float> processorsComputationalTime = new Dictionary<string, float>();
+                float energyConsumed = 0f;
+                float timeConsumed = 0f;
 
 
-            while (tasksByCompletionTime.Count != 0) {
-                if (tasksByCompletionTime.Count != 1) {
-                    float maxMidValue = 0;
-                    string taskToAllocateId = "";
-                    string optimalProcessorId = "";
+                while (tasksByCompletionTime.Count != 0) {
+                    if (tasksByCompletionTime.Count != 1) {
+                        float maxMidValue = 0;
+                        string taskToAllocateId = "";
+                        string optimalProcessorId = "";
 
-                    foreach (var task in tasksByCompletionTime) {
-                        int midCompletionTimeIndex = task.Value.Count / 2;
-                        float midCompletionTimeValue = (Convert.ToSingle(task.Value.ElementAt(midCompletionTimeIndex).Value) + Convert.ToSingle(task.Value.ElementAt(midCompletionTimeIndex + 1).Value)) / 2;
-                        if (midCompletionTimeValue > maxMidValue) {
-                            maxMidValue = midCompletionTimeValue;
-                            taskToAllocateId = task.Key;
-                            optimalProcessorId = task.Value.ElementAt(0).Key;
+                        foreach (var task in tasksByCompletionTime) {
+                            int midCompletionTimeIndex = task.Value.Count / 2;
+                            float midCompletionTimeValue = (Convert.ToSingle(task.Value.ElementAt(midCompletionTimeIndex).Value) + Convert.ToSingle(task.Value.ElementAt(midCompletionTimeIndex + 1).Value)) / 2;
+                            if (midCompletionTimeValue > maxMidValue) {
+                                maxMidValue = midCompletionTimeValue;
+                                taskToAllocateId = task.Key;
+
+                                // if energyConsumed is higher than the previous one, select another processor
+                                optimalProcessorId = task.Value.ElementAt(0).Key;
+                            }
                         }
-                    }
 
-                    if (processorsWithTasks.ContainsKey(optimalProcessorId)) {
-                        processorsWithTasks[optimalProcessorId].Add(taskToAllocateId);
+                        if (processorsWithTasks.ContainsKey(optimalProcessorId)) {
+                            processorsWithTasks[optimalProcessorId].Add(taskToAllocateId);
+                        }
+                        else {
+                            processorsWithTasks.Add(optimalProcessorId, new List<string>() { taskToAllocateId });
+                        }
+
+                        if (processorsComputationalTime.ContainsKey(optimalProcessorId)) {
+                            processorsComputationalTime[optimalProcessorId] = processorsComputationalTime[optimalProcessorId] + tasksByCompletionTime[taskToAllocateId][optimalProcessorId];
+                        }
+                        else {
+                            processorsComputationalTime.Add(optimalProcessorId, tasksByCompletionTime[taskToAllocateId][optimalProcessorId]);
+                        }
+
+                        energyConsumed += AllocationHelper.GetEnergyConsumedPerTask(allocInput.Coefficients, allocInput.Processors[optimalProcessorId], tasksByCompletionTime[taskToAllocateId][optimalProcessorId]);
+                        tasksByCompletionTime.Remove(taskToAllocateId);
                     }
                     else {
-                        processorsWithTasks.Add(optimalProcessorId, new List<string>() { taskToAllocateId });
+                        // assign the last unallocated task to the processor with the minimum completion time
+                        processorsWithTasks[tasksByCompletionTime.First().Value.First().Key].Add(tasksByCompletionTime.First().Key);
+                        processorsComputationalTime[tasksByCompletionTime.First().Value.First().Key] = processorsComputationalTime[tasksByCompletionTime.First().Value.First().Key] + tasksByCompletionTime.First().Value.First().Value;
+                        tasksByCompletionTime.Remove(tasksByCompletionTime.First().Key);
                     }
-
-                    if (processorsComputationalTime.ContainsKey(optimalProcessorId)) {
-                        processorsComputationalTime[optimalProcessorId] = processorsComputationalTime[optimalProcessorId] + tasksByCompletionTime[taskToAllocateId][optimalProcessorId];
-                    }
-                    else {
-                        processorsComputationalTime.Add(optimalProcessorId, tasksByCompletionTime[taskToAllocateId][optimalProcessorId]);
-                    }
-
-                    energyConsumedTotal += AllocationHelper.GetEnergyConsumedPerTask(allocInput.Coefficients, allocInput.Processors[optimalProcessorId], tasksByCompletionTime[taskToAllocateId][optimalProcessorId]);
-                    tasksByCompletionTime.Remove(taskToAllocateId);
                 }
-                else {
-                    // assign the last unallocated task to the processor with the minimum completion time
-                    processorsWithTasks[tasksByCompletionTime.First().Value.First().Key].Add(tasksByCompletionTime.First().Key);
-                    processorsComputationalTime[tasksByCompletionTime.First().Value.First().Key] = processorsComputationalTime[tasksByCompletionTime.First().Value.First().Key] + tasksByCompletionTime.First().Value.First().Value;
-                    tasksByCompletionTime.Remove(tasksByCompletionTime.First().Key);
+
+                if (minEnergyConsumed == 0 || energyConsumed < minEnergyConsumed) {
+                    minEnergyConsumed = energyConsumed;
+                    timeConsumed = processorsComputationalTime.Values.Max();
+                    var allocOutput = new AllocOutput((allocations.Count + 1).ToString(), timeConsumed, energyConsumed, processorsWithTasks);
+                    allocations.Add(allocOutput);
                 }
             }
 
-            timeConsumedTotal = processorsComputationalTime.Values.Max();
-            var allocOutput = new AllocOutput("1", timeConsumedTotal, energyConsumedTotal, processorsWithTasks);
-            allocations.Add(allocOutput);
-
+            watch.Stop();
             return allocations;
         }
 
