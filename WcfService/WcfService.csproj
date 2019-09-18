@@ -68,11 +68,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllocationHelper.cs" />
+    <Compile Include="Allocation_Algos\SortMid\SortMid.cs" />
     <Compile Include="AllocService.svc.cs">
       <DependentUpon>AllocService.svc</DependentUpon>
     </Compile>
     <Compile Include="IAllocService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SortMid.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

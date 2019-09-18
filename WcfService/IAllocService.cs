@@ -11,8 +11,6 @@ namespace WcfService
     [ServiceContract]
     public interface IAllocService
     {
-        [OperationContract]
-        List<AllocOutput> GetAllocations(AllocInput allocInput);
 
         [OperationContract]
         List<AllocOutput> GetAllocationsSortMid(AllocInput allocInput);
