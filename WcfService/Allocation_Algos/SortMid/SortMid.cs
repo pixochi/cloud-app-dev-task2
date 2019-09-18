@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Collections.Specialized;
 using System.Collections;
+using WcfService.Allocation_Algos.Shared;
 
 namespace WcfService.Allocation_Algos.SortMid
 {
@@ -32,54 +33,6 @@ namespace WcfService.Allocation_Algos.SortMid
             return allocations;
         }
     
-    }
-
-    public class Allocation
-    {
-        private Dictionary<string, List<string>> processors;
-        private Dictionary<string, float> processorFrequencies;
-        private int tasksCount;
-        private int assignedTasksCount;
-        private float energyConsumed;
-        private List<float> coefficients;
-
-        public Allocation(int tasksCount, Dictionary<string, float> processorFrequencies, List<float> coefficients)
-        {
-            this.processors = new Dictionary<string, List<string>>();
-            this.tasksCount = tasksCount;
-            this.coefficients = coefficients;
-            this.processorFrequencies = processorFrequencies;
-            this.assignedTasksCount = 0;
-            this.energyConsumed = 0;
-        }
-
-        public int TasksCount { get => tasksCount; set => tasksCount = value; }
-
-        public bool IsDone { get => tasksCount == assignedTasksCount; }
-        public Dictionary<string, List<string>> Processors { get => processors; set => processors = value; }
-        public float EnergyConsumed { get => energyConsumed; set => energyConsumed = value; }
-
-        public void AssignTaskToProcessor(string taskId, string processorId, float runtime)
-        {
-            List<string> taskIds;
-            assignedTasksCount = assignedTasksCount + 1;
-            this.energyConsumed += AllocationHelper.GetEnergyConsumedPerTask(this.coefficients, processorFrequencies[processorId], runtime);
-
-            if (this.processors.ContainsKey(processorId)) {
-                taskIds = this.processors[processorId];
-                taskIds.Add(taskId);
-            }
-            else {
-                taskIds = new List<string>() { taskId };
-            }
-
-            if (this.processors.ContainsKey(processorId)) {
-                this.processors[processorId] = taskIds;
-            }
-            else {
-                this.processors.Add(processorId, taskIds);
-            }
-        }
     }
 
     public class TaskAssignment
@@ -112,70 +65,6 @@ namespace WcfService.Allocation_Algos.SortMid
 
         public string TaskId { get => taskId; set => taskId = value; }
         public string ProcessorId { get => processorId; set => processorId = value; }
-    }
-
-    public class Grid
-    {
-        private Dictionary<string, Dictionary<string, float>> content;
-
-        public Grid(Dictionary<string, float> tasks, Dictionary<string, float> processors, float refFrequency)
-        {
-            // {[taskId: string]: {
-            //    [processorId: string]: taskRuntimeOnThatProcessor // in ASCENDING order
-            // }
-            Dictionary<string, Dictionary<string, float>> grid = new Dictionary<string, Dictionary<string, float>>();
-
-            foreach (var task in tasks) {
-                Dictionary<string, float> gridRow = new Dictionary<string, float>();
-
-                foreach (var processor in processors) {
-                    float taskRuntime = task.Value * (refFrequency / processor.Value);
-                    gridRow.Add(processor.Key, taskRuntime);
-                }
-
-                grid.Add(task.Key, gridRow);
-            }
-
-            this.content = grid;
-            this.sortGrid();
-        }
-
-        public void RemoveRow(string taskId)
-        {
-            this.content.Remove(taskId);
-        }
-
-        public float GetRuntime(string taskId, string processorId)
-        {
-            return this.content[taskId][processorId];
-        }
-
-        private void sortGrid()
-        {
-            Dictionary<string, Dictionary<string, float>> sortedGrid = new Dictionary<string, Dictionary<string, float>>();
-
-            foreach (var taskRow in this.content) {
-                Dictionary<string, float> sortedRowByCompletionTime = taskRow.Value.OrderBy(r => r.Value)
-                      .ToDictionary(c => c.Key as string, d => Convert.ToSingle(d.Value));
-
-                sortedGrid.Add(taskRow.Key, sortedRowByCompletionTime);
-            }
-
-            this.content = sortedGrid;
-        }
-
-        public void UpdateProcessorRuntime(string processorId, float increaseBy)
-        {
-            var tmp = new Dictionary<string, Dictionary< string, float>>(this.content);
-            foreach (var gridRow in tmp) {
-                var updatedRowValue = gridRow.Value;
-                updatedRowValue[processorId] += increaseBy;
-                this.content[gridRow.Key] = updatedRowValue;
-            }
-            this.sortGrid();
-        }
-
-        public Dictionary<string, Dictionary<string, float>> Content { get => content; set => content = value; }
     }
 
     public class GridRow

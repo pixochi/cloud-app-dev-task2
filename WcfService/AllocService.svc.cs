@@ -10,6 +10,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using WcfService.Allocation_Algos.SortMid;
+using WcfService.Allocation_Algos.Heuristic;
 
 namespace WcfService
 {
@@ -18,6 +19,11 @@ namespace WcfService
         public List<AllocOutput> GetAllocationsSortMid(AllocInput allocInput)
         {
             return SortMid.GetAllocations(allocInput);
+        }
+
+        public List<AllocOutput> GetAllocationsHeuristic(AllocInput allocInput)
+        {
+            return Heuristic.GetAllocations(allocInput);
         }
     }
 }

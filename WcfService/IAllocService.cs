@@ -14,6 +14,9 @@ namespace WcfService
 
         [OperationContract]
         List<AllocOutput> GetAllocationsSortMid(AllocInput allocInput);
+
+        [OperationContract]
+        List<AllocOutput> GetAllocationsHeuristic(AllocInput allocInput);
     }
 
 
@@ -65,6 +68,19 @@ namespace WcfService
             this.timeConsumed = timeConsumed;
             this.energyConsumed = energyConsumed;
             this.processors = processors;
+        }
+
+        public string GetUniqueId()
+        {
+            string id = "";
+            foreach (var processor in this.processors) {
+                id += processor.Key + ":";
+                foreach (var taskId in processor.Value) {
+                    id += taskId + ",";
+                }
+            }
+
+            return id;
         }
 
         [DataMember]
