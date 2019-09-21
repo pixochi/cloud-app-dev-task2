@@ -9,8 +9,8 @@ namespace WcfService.Allocation_Algos.Heuristic
 {
     public static class Heuristic
     {
-        private static uint MAX_DURATION_MS = 5000;
-        private static float TIME_STEP = 0.0003f;
+        private static uint MAX_DURATION_MS = 5000 * 2;
+        private static float TIME_STEP = 0.0001f;
         private static uint MAX_ALLOCATIONS = 1000;
         public static List<AllocOutput> GetAllocations(AllocInput allocInput)
         {
@@ -33,8 +33,8 @@ namespace WcfService.Allocation_Algos.Heuristic
                     float taskRuntime;
 
                     do {
-                        longestRuntimeTaskId = unassignedTasks.Aggregate((x, y) => x.Value < y.Value ? x : y).Key;
-                        hiqhestFreqProcessorId = availableProcessors.Aggregate((x, y) => x.Value < y.Value ? x : y).Key;
+                        longestRuntimeTaskId = unassignedTasks.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+                        hiqhestFreqProcessorId = availableProcessors.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
                         taskRuntime = unassignedTasks[longestRuntimeTaskId] * (allocInput.RefFrequency / availableProcessors[hiqhestFreqProcessorId]);
                         availableProcessors.Remove(hiqhestFreqProcessorId);
 
@@ -75,7 +75,7 @@ namespace WcfService.Allocation_Algos.Heuristic
                 trialCount += 1;
             }
             trialCount = trialCount;
-            allocations.Reverse();
+            //allocations.Reverse();
             return allocations.Take(30).ToList();
         }
     }

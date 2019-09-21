@@ -63,7 +63,7 @@ namespace GUI
                 this.printRow("From Service:");
                 var client = new AllocServiceReference.AllocServiceClient();
                 var allocInput = new AllocServiceReference.AllocInput(configFile.Tasks, configFile.Processors, configFile.MaxDuration, configFile.RefFrequency, configFile.Coefficients);
-                List<AllocServiceReference.AllocOutput> allocations = client.GetAllocationsHeuristic(allocInput);
+                List<AllocServiceReference.AllocOutput> allocations = client.GetAllocationsGA(allocInput);
 
                 string formattedAllocations = Visualizer.Allocations(allocations);
                 this.printRow(formattedAllocations);

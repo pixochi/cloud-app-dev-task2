@@ -1,0 +1,523 @@
+﻿using Medallion;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Web;
+using WcfService.Allocation_Algos.Shared;
+
+namespace WcfService.Allocation_Algos.GA
+{
+    public class GA
+    {
+        private float mutationRate = 15f;
+        private int tournamentSize;
+        private Dictionary<string, float> tasks;
+        private Dictionary<string, float> processors;
+        private List<float> coefficients;
+        private float refFreq;
+        private Population lastGeneration;
+        private float maxDuration;
+        private List<Allocation> correctAllocs; 
+
+        public GA(int tournamentSize, Dictionary<string, float> tasks, Dictionary<string, float> processors, List<float> coefficients, float refFreq, float maxDuration)
+        {
+            this.tournamentSize = tournamentSize;
+            this.tasks = tasks;
+            this.processors = processors;
+            this.coefficients = coefficients;
+            this.refFreq = refFreq;
+            this.maxDuration = maxDuration;
+            this.correctAllocs = new List<Allocation>();
+        }
+
+        public Population evolvePopulation(Population population)
+        {
+            Population newPopulation = new Population(population.Size, false, this.coefficients, this.refFreq, tasks, processors);
+
+            foreach (var item in newPopulation.GetIndividuals()) {
+                if (!item.AllTasksAssigned()) {
+                    var a = item.AllTasksAssigned();
+                    var b = a;
+                }
+            }
+
+            Allocation fittest = population.GetFittest();
+            newPopulation.SaveAlloc(fittest);
+
+            //if (fittest.ProgramRuntime < this.maxDuration) {
+            //    correctAllocs.Add(population.GetFittest());
+            //}
+
+            for (int allocIndex = 1; allocIndex < population.Size; allocIndex++) {
+
+                if (Rand.NextDouble() > 0.5) {
+                    Allocation parent1 = this.tournamentSelect(population);
+                    Allocation parent2 = this.tournamentSelect(population);
+                    Allocation child = this.crossover(parent1, parent2);
+
+                    //if (!parent1.AllTasksAssigned()) {
+                    //    Debug.WriteLine("Parent 1 is fucked up");
+                    //}
+
+                    //if (!parent2.AllTasksAssigned()) {
+                    //    Debug.WriteLine("Parent 2 is fucked up");
+                    //}
+
+                    //if (!child.AllTasksAssigned()) {
+                    //    Debug.WriteLine("Child is fucked up");
+                    //    var a = child.AllTasksAssigned();
+
+                    //}
+
+                    newPopulation.SaveAlloc(child);
+                }
+                else {
+                    newPopulation.SaveAlloc(population.GetAllocation(allocIndex));
+                }
+
+            }
+
+            //for (int allocationIndex = 0; allocationIndex < newPopulation.Size; allocationIndex++) {
+            //    Allocation mutatedAlloc = this.mutate(newPopulation.GetAllocation(allocationIndex));
+            //    //if (!mutatedAlloc.AllTasksAssigned()) {
+            //    //    Debug.WriteLine("mutatedAlloc is fucked up");
+            //    //}
+            //    newPopulation.ReplaceAlloc(allocationIndex, mutatedAlloc);
+            //}
+
+            return newPopulation;
+        }
+
+        private Allocation tournamentSelect(Population population)
+        {
+            Population tournament = new Population(this.tournamentSize, false, this.coefficients, this.refFreq, this.tasks, this.processors);
+
+            for (int allocationIndex = 0; allocationIndex < this.tournamentSize; allocationIndex++) {
+                int randomAllocationIndex = Rand.Next(0, population.Size);
+                tournament.SaveAlloc(population.GetAllocation(randomAllocationIndex));
+            }
+
+            Allocation fittest = tournament.GetFittest();
+
+            if (!fittest.AllTasksAssigned()) {
+                Debug.WriteLine("Tournament fucked up");
+                var a = fittest.AllTasksAssigned();
+            }
+
+            return fittest;
+        }
+
+        // TODO: Debug crossover!!!
+        private Allocation crossover(Allocation parent1, Allocation parent2)
+        {
+            Allocation child = new Allocation(this.coefficients, this.refFreq, this.tasks, this.processors);
+            List<string> processorIds = parent1.ProcessorIds;
+            int startPos = Rand.Next(0, processorIds.Count);
+            int endPos = Rand.Next(startPos + 1, processorIds.Count);
+
+            while (startPos >= endPos) {
+                startPos = Rand.Next(0, processorIds.Count);
+                endPos = Rand.Next(startPos + 1, processorIds.Count);
+            }
+
+            // Select processors from parent 1
+            for (int processorIndex = startPos; processorIndex < endPos; processorIndex++) {
+                string processorId = processorIds[processorIndex];
+                child.SetProcessor(processorId, parent1.GetProcessor(processorId));
+            }
+
+            // Remove duplicated tasks
+            //parent2.RemoveDuplicatedTasks(child.GetAssignedTasks());
+
+            // Select processors from parent 2
+            for (int processorIndex = 0; processorIndex < processorIds.Count; processorIndex++) {
+                string processorId = processorIds[processorIndex];
+
+                if (!child.ContainsProcessor(processorId)) {
+                    child.SetProcessor(processorId, parent2.GetProcessor(processorId));
+                }
+            }
+
+            var unassignedTasks = child.GetUnassignedTasks();
+            foreach (var taskId in unassignedTasks) {
+                string randomProcessorId = processorIds[Rand.Next(0, processorIds.Count)];
+                child.AssignTaskToProcessor(randomProcessorId, taskId);
+            }
+
+            //if (!child.AllTasksAssigned()) {
+            //    Debug.WriteLine("crossover fucked up");
+            //    var a = child.AllTasksAssigned();
+            //}
+
+            return child;
+        }
+
+        private Allocation mutate(Allocation alloc)
+        {
+
+            for (int processorIndex = 0; processorIndex < alloc.ProcessorIds.Count; processorIndex++) {
+                if (Rand.Next(0, 101) < this.mutationRate) {
+                    int randomProcessorIndex = Rand.Next(0, alloc.ProcessorIds.Count);
+
+                    Processor processor1 = alloc.GetProcessor(alloc.ProcessorIds[processorIndex]);
+                    string processor1TaskId = processor1.GetRandomTask();
+
+                    Processor processor2 = alloc.GetProcessor(alloc.ProcessorIds[randomProcessorIndex]);
+                    string processor2TaskId = processor2.GetRandomTask();
+
+                    if (processor2TaskId != "") {
+                        alloc.AssignTaskToProcessor(processor1.Id, processor2TaskId);
+                        alloc.RemoveTask(processor2.Id, processor2TaskId);
+                    }
+
+                    if (processor1TaskId != "") {
+                        alloc.AssignTaskToProcessor(processor2.Id, processor1TaskId);
+                        alloc.RemoveTask(processor1.Id, processor1TaskId);
+                    }
+
+                }
+            }
+
+            return alloc;
+        }
+
+        public Allocation GetBestAlloc()
+        {
+            Population lastGeneration = this.GetLastGeneration();
+            return lastGeneration.GetFittest();
+        }
+
+        public Population GetLastGeneration()
+        {
+            return this.lastGeneration;
+        }
+
+        public List<Allocation> GetCorrectAllocs()
+        {
+            var a = this.correctAllocs;
+            return a;
+        }
+
+        public void Train()
+        {
+            Population population = new Population(20, true, this.coefficients, this.refFreq, this.tasks, this.processors);
+
+            foreach (var item in population.GetIndividuals()) {
+                if (!item.AllTasksAssigned()) {
+                    var a = 5;
+                }
+            }
+
+            for (int generationIndex = 0; generationIndex < 2000; generationIndex++) {
+                population = this.evolvePopulation(population);
+
+                foreach (var item in population.GetIndividuals()) {
+                    if (!item.AllTasksAssigned()) {
+                        var b = 5;
+                    }
+                }
+
+                Debug.WriteLine(population.GetFittest().EnergyConsumed.ToString());
+            }
+
+            this.lastGeneration = population;
+        }
+    }
+
+    public class Population
+    {
+        private List<Allocation> allocList;
+
+        public int Size { get => allocList.Count;}
+
+        public Population(int populationSize, bool isInitial, List<float> coefficients, float refFreq, Dictionary<string, float> tasks, Dictionary<string, float> processors)
+        {
+            this.allocList = new List<Allocation>();
+
+            if (isInitial) {
+                for (int allocationIndex = 0; allocationIndex < populationSize; allocationIndex++) {
+                    Allocation alloc = new Allocation(coefficients, refFreq, tasks, processors);
+
+                    if (!alloc.AllTasksAssigned()) {
+                        var a = alloc.AllTasksAssigned();
+                        var b = a;
+                    }
+
+                    this.SaveAlloc(alloc);
+                }
+            }
+        }
+
+        public void SaveAlloc(Allocation alloc)
+        {
+            this.allocList.Add(alloc);
+        }
+        public void ReplaceAlloc(int allocIndex, Allocation alloc)
+        {
+            this.allocList[allocIndex] = alloc;
+        }
+
+        public Allocation GetAllocation(int allocIndex)
+        {
+            return this.allocList[allocIndex];
+        }
+
+        public Allocation GetFittest()
+        {
+
+            foreach (var item in this.allocList) {
+                if (!item.AllTasksAssigned()) {
+                    var b = item.AllTasksAssigned();
+                    var a = b;
+                }
+            }
+
+            Allocation fittest = this.GetAllocation(0);
+
+            for (int allocIndex = 1; allocIndex < this.allocList.Count; allocIndex++) {
+                if (fittest.GetFitness() < this.GetAllocation(allocIndex).GetFitness()) {
+                    fittest = this.GetAllocation(allocIndex);
+
+                    if (!fittest.AllTasksAssigned()) {
+                        var a = fittest.AllTasksAssigned();
+                        var b = a;
+                    }
+                }
+            }
+
+            fittest = fittest.Clone();
+
+            if (!fittest.AllTasksAssigned()) {
+                var a = fittest.AllTasksAssigned();
+                var b = a;
+            }
+
+            return fittest;
+        }
+
+        public List<Allocation> GetIndividuals()
+        {
+            return this.allocList;
+        }
+
+    }
+
+    public class Allocation
+    {
+        private float energyConsumed;
+        private Dictionary<string, Processor> processors;
+        private float refFreq;
+        private List<float> coefficients;
+        private Dictionary<string, float> tasks;
+        private Dictionary<string, float> processorFreqs;
+        private float programRuntime;
+        private int assignedTasksCount;
+
+        public Allocation(List<float> coefficients, float refFreq, Dictionary <string, float> tasks, Dictionary<string, float> processorFreqs)
+        {
+            energyConsumed = 0;
+            this.processors = new Dictionary<string, Processor>();
+            this.refFreq = refFreq;
+            this.coefficients = coefficients;
+            this.tasks = tasks;
+            this.processorFreqs = processorFreqs;
+
+            // Create an instance for each processor
+            foreach (var proc in this.processorFreqs) {
+                this.processors.Add(proc.Key, new Processor(proc.Key, this.processorFreqs[proc.Key]));
+            }
+
+            // Randomly assign each task to a processor
+            foreach (var task in tasks) {
+                int processorIndex = Rand.Next(0, processors.Count);
+                this.AssignTaskToProcessor(processors.ElementAt(processorIndex).Key, task.Key);
+            }
+        }
+
+        public Allocation Clone()
+        {
+            return (Allocation)this.MemberwiseClone();
+        }
+
+        public List<string> ProcessorIds { get => Processors.Keys.ToList(); }
+        public Dictionary<string, Processor> Processors { get => processors; set => processors = value; }
+        public float EnergyConsumed { get => energyConsumed; set => energyConsumed = value; }
+        public float ProgramRuntime { get => programRuntime; set => programRuntime = value; }
+        public int AssignedTasksCount { get => this.getCount(); set => assignedTasksCount = value; }
+
+        private int getCount()
+        {
+            int count = 0;
+
+            foreach (var item in this.processors) {
+                count += item.Value.Tasks.Count;
+            }
+
+            return count;
+        }
+
+        private float getProgramRuntime()
+        {
+            float programRuntime = 0;
+
+            foreach (var processor in this.processors) {
+                float processorRuntime = processor.Value.Runtime;
+
+                if (processorRuntime > programRuntime) {
+                    programRuntime = processorRuntime;
+                }
+            }
+
+            return programRuntime;
+        }
+
+        public double GetFitness()
+        {
+            return 1 / this.ProgramRuntime;
+        }
+
+        public Processor GetProcessor(string id)
+        {
+            return this.Processors[id];
+        }
+
+        public void SetProcessor(string procId, Processor proc)
+        {
+            this.Processors[procId] = proc;
+        }
+
+        public void AssignTaskToProcessor(string processorId, string taskId)
+        {
+            Processor proc;
+
+            if (this.Processors.ContainsKey(processorId)) {
+                proc = this.Processors[processorId];
+            }
+            else {
+                proc = new Processor(processorId, this.processorFreqs[processorId]);
+            }
+
+            proc.AssignTask(taskId);
+            this.Processors[processorId] = proc;
+
+            // Store energy consumed by the task
+            float runtimePerTask = this.tasks[taskId] * (this.refFreq / processorFreqs[processorId]);
+            this.energyConsumed += AllocationHelper.GetEnergyConsumedPerTask(this.coefficients, processorFreqs[processorId], runtimePerTask);
+
+            // Store runtime of the task on the selected processor
+            proc.AddRuntime(runtimePerTask);
+            this.programRuntime = this.getProgramRuntime();
+        }
+
+        public void RemoveTask(string processorId, string taskId)
+        {
+            Processor proc = this.processors[processorId];
+            proc.RemoveTask(taskId);
+            this.processors[processorId] = proc;
+        }
+
+        public bool ContainsProcessor(string processorId)
+        {
+            return this.Processors.ContainsKey(processorId);
+        }
+
+        public bool AllTasksAssigned()
+        {
+            int assignedTasksCount = 0;
+            foreach (var proc in this.processors) {
+                assignedTasksCount += proc.Value.Tasks.Count;
+            }
+
+            return (assignedTasksCount == this.tasks.Count);
+        }
+
+        public List<string> GetUnassignedTasks()
+        {
+            List<string> taskIds = this.tasks.Keys.ToList();
+
+            foreach (var proc in this.processors) {
+                foreach (var taskId in proc.Value.Tasks) {
+                    taskIds.Remove(taskId);
+                }
+            }
+
+            return taskIds;
+        }
+
+        public void RemoveDuplicatedTasks(List<string> assignedTasks)
+        {
+            var tmpProcessors = new Dictionary<string, Processor>(this.processors);
+            foreach (var proc in tmpProcessors) {
+                var tmp = new List<string>(proc.Value.Tasks);
+                foreach (var taskId in tmp) {
+                    int index = assignedTasks.FindIndex(t => t == taskId);
+                    if (index != 1) {
+                        this.RemoveTask(proc.Key, taskId);
+                    }
+                }
+            }
+        }
+
+        public List<string> GetAssignedTasks()
+        {
+            List<string> taskIds = new List<string>();
+
+            foreach (var proc in this.processors) {
+                foreach (var taskId in proc.Value.Tasks) {
+                    taskIds.Add(taskId);
+                }
+            }
+
+            return taskIds;
+        }
+    }
+
+    public class Processor
+    {
+        private List<string> tasks;
+        private string id;
+        private float freq;
+        private float runtime;
+
+        public Processor(string id, float freq)
+        {
+            Tasks = new List<string>();
+            this.Id = id;
+            this.Freq = freq;
+            runtime = 0;
+        }
+
+        public string Id { get => id; set => id = value; }
+        public List<string> Tasks { get => tasks; set => tasks = value; }
+        public float Freq { get => freq; set => freq = value; }
+        public float Runtime { get => runtime; set => runtime = value; }
+
+        public string GetRandomTask()
+        {
+            if (this.Tasks.Count == 0) {
+                return "";
+            }
+
+            int taskIndex = Rand.Next(0, this.Tasks.Count);
+
+            return this.Tasks[taskIndex];
+        }
+
+        public void AssignTask(string taskId)
+        {
+            this.Tasks.Add(taskId);
+        }
+
+        public void RemoveTask(string taskId)
+        {
+            this.Tasks.Remove(taskId);
+        }
+
+        public void AddRuntime(float increaseBy)
+        {
+            this.runtime += increaseBy;
+        }
+    }
+
+}

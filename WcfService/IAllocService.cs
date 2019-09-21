@@ -17,6 +17,9 @@ namespace WcfService
 
         [OperationContract]
         List<AllocOutput> GetAllocationsHeuristic(AllocInput allocInput);
+
+        [OperationContract]
+        List<AllocOutput> GetAllocationsGA(AllocInput allocInput);
     }
 
 
