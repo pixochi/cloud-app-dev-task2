@@ -36,13 +36,13 @@
             // mainFormOutput
             // 
             this.mainFormOutput.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.mainFormOutput.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.mainFormOutput.Location = new System.Drawing.Point(0, 59);
+            this.mainFormOutput.Margin = new System.Windows.Forms.Padding(3, 60, 3, 3);
             this.mainFormOutput.Multiline = true;
             this.mainFormOutput.Name = "mainFormOutput";
             this.mainFormOutput.ReadOnly = true;
             this.mainFormOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.mainFormOutput.Size = new System.Drawing.Size(770, 252);
+            this.mainFormOutput.Size = new System.Drawing.Size(1108, 593);
             this.mainFormOutput.TabIndex = 1;
             // 
             // urlInputBox
@@ -56,7 +56,7 @@
             // 
             this.getAllocationsButton.Location = new System.Drawing.Point(676, 0);
             this.getAllocationsButton.Name = "getAllocationsButton";
-            this.getAllocationsButton.Size = new System.Drawing.Size(69, 27);
+            this.getAllocationsButton.Size = new System.Drawing.Size(424, 53);
             this.getAllocationsButton.TabIndex = 3;
             this.getAllocationsButton.Text = "Go";
             this.getAllocationsButton.UseVisualStyleBackColor = true;
@@ -78,7 +78,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(770, 311);
+            this.ClientSize = new System.Drawing.Size(1112, 653);
             this.Controls.Add(this.filePathsComboBox);
             this.Controls.Add(this.getAllocationsButton);
             this.Controls.Add(this.urlInputBox);

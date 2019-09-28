@@ -9,7 +9,7 @@ namespace WcfService.Allocation_Algos.Heuristic
 {
     public static class Heuristic
     {
-        private static uint MAX_DURATION_MS = 5000 * 2;
+        private static uint MAX_DURATION_MS = 4000;
         private static float TIME_STEP = 0.0001f;
         private static uint MAX_ALLOCATIONS = 1000;
         public static List<AllocOutput> GetAllocations(AllocInput allocInput)
@@ -56,7 +56,7 @@ namespace WcfService.Allocation_Algos.Heuristic
 
                 float programRuntime = processorRuntimes.Max((x) => x.Value);
 
-                if (newAllocation.IsDone && newAllocation.EnergyConsumed < 4000) {
+                if (newAllocation.IsDone && programRuntime <= allocInput.MaxDuration) {
                     AllocOutput allocOutput = new AllocOutput((allocations.Count + 1).ToString(), programRuntime, newAllocation.EnergyConsumed, newAllocation.Processors);
                     bool isAllocationUnique = true;
 
@@ -74,9 +74,8 @@ namespace WcfService.Allocation_Algos.Heuristic
 
                 trialCount += 1;
             }
-            trialCount = trialCount;
-            //allocations.Reverse();
-            return allocations.Take(30).ToList();
+
+            return allocations.ToList();
         }
     }
 }

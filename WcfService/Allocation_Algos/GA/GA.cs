@@ -10,8 +10,11 @@ namespace WcfService.Allocation_Algos.GA
 {
     public class GA
     {
-        private float mutationRate = 15f;
-        private int tournamentSize;
+        private int MAX_GENERATIONS = 30000;
+        private float MUTATION_RATE = 0.08f;
+        private int POPULATION_SIZE = 30;
+        private int TOURNAMENT_SIZE = 15;
+        private float CROSSOVER_RATE = 0.75f;
         private Dictionary<string, float> tasks;
         private Dictionary<string, float> processors;
         private List<float> coefficients;
@@ -20,9 +23,8 @@ namespace WcfService.Allocation_Algos.GA
         private float maxDuration;
         private List<Allocation> correctAllocs; 
 
-        public GA(int tournamentSize, Dictionary<string, float> tasks, Dictionary<string, float> processors, List<float> coefficients, float refFreq, float maxDuration)
+        public GA(Dictionary<string, float> tasks, Dictionary<string, float> processors, List<float> coefficients, float refFreq, float maxDuration)
         {
-            this.tournamentSize = tournamentSize;
             this.tasks = tasks;
             this.processors = processors;
             this.coefficients = coefficients;
@@ -39,12 +41,12 @@ namespace WcfService.Allocation_Algos.GA
             newPopulation.SaveAlloc(fittest);
 
             if (fittest.ProgramRuntime < this.maxDuration) {
-                correctAllocs.Add(fittest.Clone());
+                correctAllocs.Add(fittest);
             }
 
             for (int allocIndex = 1; allocIndex < population.Size; allocIndex++) {
 
-                if (Rand.NextDouble() > 0.5) {
+                if (Rand.NextDouble() < this.CROSSOVER_RATE) {
                     Allocation parent1 = this.tournamentSelect(population);
                     Allocation parent2 = this.tournamentSelect(population);
                     Allocation child = this.crossover(parent1, parent2);
@@ -58,11 +60,7 @@ namespace WcfService.Allocation_Algos.GA
             }
 
             for (int allocationIndex = 0; allocationIndex < newPopulation.Size; allocationIndex++) {
-
                 Allocation mutatedAlloc = this.mutate(newPopulation.GetAllocation(allocationIndex));
-                if (!mutatedAlloc.AllTasksAssigned()) {
-                    Debug.WriteLine("mutatedAlloc is fucked up");
-                }
                 newPopulation.ReplaceAlloc(allocationIndex, mutatedAlloc);
             }
 
@@ -71,16 +69,16 @@ namespace WcfService.Allocation_Algos.GA
 
         private Allocation tournamentSelect(Population population)
         {
-            Population tournament = new Population(this.tournamentSize, false, this.coefficients, this.refFreq, this.tasks, this.processors);
+            Population tournament = new Population(this.TOURNAMENT_SIZE, false, this.coefficients, this.refFreq, this.tasks, this.processors);
 
-            for (int allocationIndex = 0; allocationIndex < this.tournamentSize; allocationIndex++) {
+            for (int allocationIndex = 0; allocationIndex < this.TOURNAMENT_SIZE; allocationIndex++) {
                 int randomAllocationIndex = Rand.Next(0, population.Size);
                 tournament.SaveAlloc(population.GetAllocation(randomAllocationIndex));
             }
 
             Allocation fittest = tournament.GetFittest();
 
-            return fittest.Clone();
+            return fittest;
         }
 
         private Allocation crossover(Allocation parent1, Allocation parent2)
@@ -126,27 +124,30 @@ namespace WcfService.Allocation_Algos.GA
         {
             Allocation mutatedAlloc = alloc.Clone();
 
-            if (Rand.Next(0, 101) < this.mutationRate) {
-                string taskId = "";
-                string originalProcId = "";
+            if (Rand.NextDouble() < this.MUTATION_RATE) {
+                int switchTasksCount = Rand.Next(1, 3);
+                for (int _ = 0; _ < switchTasksCount; _++) {
+                    string taskId = "";
+                    string originalProcId = "";
 
-                do {
-                    // Get a random task id
-                    int randOriginalProcIndex = Rand.Next(0, alloc.ProcessorIds.Count);
-                    originalProcId = alloc.ProcessorIds[randOriginalProcIndex];
-                    Processor proc = alloc.GetProcessor(originalProcId);
-                    taskId = proc.GetRandomTask();
-                } while (taskId == "");
-            
-                // Assign the task id to another processor
-                string newProcId;
-                do {
-                    int randNewProcIndex = Rand.Next(0, alloc.ProcessorIds.Count);
-                    newProcId = mutatedAlloc.ProcessorIds[randNewProcIndex]; 
-                } while (newProcId == originalProcId);
+                    do {
+                        // Get a random task id
+                        int randOriginalProcIndex = Rand.Next(0, mutatedAlloc.ProcessorIds.Count);
+                        originalProcId = mutatedAlloc.ProcessorIds[randOriginalProcIndex];
+                        Processor proc = mutatedAlloc.GetProcessor(originalProcId);
+                        taskId = proc.GetRandomTask();
+                    } while (taskId == "");
 
-                mutatedAlloc.AssignTaskToProcessor(newProcId, taskId);
-                mutatedAlloc.RemoveTask(originalProcId, taskId);
+                    // Assign the task id to another processor
+                    string newProcId;
+                    do {
+                        int randNewProcIndex = Rand.Next(0, mutatedAlloc.ProcessorIds.Count);
+                        newProcId = mutatedAlloc.ProcessorIds[randNewProcIndex];
+                    } while (newProcId == originalProcId);
+
+                    mutatedAlloc.AssignTaskToProcessor(newProcId, taskId);
+                    mutatedAlloc.RemoveTask(originalProcId, taskId);
+                }
             }
 
             return mutatedAlloc;
@@ -170,11 +171,11 @@ namespace WcfService.Allocation_Algos.GA
 
         public void Train()
         {
-            Population population = new Population(20, true, this.coefficients, this.refFreq, this.tasks, this.processors);
+            Population population = new Population(POPULATION_SIZE, true, this.coefficients, this.refFreq, this.tasks, this.processors);
 
-            for (int generationIndex = 0; generationIndex < 2000; generationIndex++) {
+            for (int generationIndex = 0; generationIndex < MAX_GENERATIONS; generationIndex++) {
                 population = this.evolvePopulation(population);
-                Debug.WriteLine(population.GetFittest().EnergyConsumed.ToString());
+                //Debug.WriteLine(population.GetFittest().EnergyConsumed.ToString());
             }
 
             this.lastGeneration = population;
@@ -225,7 +226,7 @@ namespace WcfService.Allocation_Algos.GA
                 }
             }
 
-            return fittest;
+            return fittest.Clone();
         }
 
         public List<Allocation> GetIndividuals()

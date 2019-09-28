@@ -31,7 +31,7 @@ namespace WcfService
         {
             List<AllocOutput> allocations = new List<AllocOutput>();
 
-            GA GAlgo = new GA(10, allocInput.Tasks, allocInput.Processors, allocInput.Coefficients, allocInput.RefFrequency, allocInput.MaxDuration);
+            GA GAlgo = new GA(allocInput.Tasks, allocInput.Processors, allocInput.Coefficients, allocInput.RefFrequency, allocInput.MaxDuration);
             GAlgo.Train();
 
             Population pop = GAlgo.GetLastGeneration();
