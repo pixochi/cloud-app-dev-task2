@@ -36,12 +36,9 @@ namespace WcfService
 
             Population pop = GAlgo.GetLastGeneration();
 
-            foreach (var alloc in GAlgo.GetCorrectAllocs().Take(5)) {
-                float runtime = alloc.ProgramRuntime;
-                pop.SaveAlloc(alloc);
-            }
+            var uniqueCorrectAllocs = GAlgo.GetCorrectAllocs().GroupBy(elem => elem.GetUniqueId()).Select(group => group.First());
 
-            foreach (var alloc in pop.GetIndividuals()) {
+            foreach (var alloc in uniqueCorrectAllocs) {
                 Dictionary<string, List<string>> processors = new Dictionary<string, List<string>>();
                 foreach (var proc in alloc.Processors) {
                     processors.Add(proc.Value.Id, proc.Value.Tasks);

@@ -33,20 +33,13 @@ namespace WcfService.Allocation_Algos.GA
 
         public Population evolvePopulation(Population population)
         {
-            Population newPopulation = new Population(population.Size, false, this.coefficients, this.refFreq, tasks, processors);
-
-            foreach (var item in newPopulation.GetIndividuals()) {
-                if (!item.AllTasksAssigned()) {
-                    var a = item.AllTasksAssigned();
-                    var b = a;
-                }
-            }
+            Population newPopulation = new Population(population.Size, false, this.coefficients, this.refFreq, this.tasks, this.processors);
 
             Allocation fittest = population.GetFittest();
             newPopulation.SaveAlloc(fittest);
 
             if (fittest.ProgramRuntime < this.maxDuration) {
-                correctAllocs.Add(population.GetFittest());
+                correctAllocs.Add(fittest.Clone());
             }
 
             for (int allocIndex = 1; allocIndex < population.Size; allocIndex++) {
@@ -64,13 +57,14 @@ namespace WcfService.Allocation_Algos.GA
 
             }
 
-            //for (int allocationIndex = 0; allocationIndex < newPopulation.Size; allocationIndex++) {
-            //    Allocation mutatedAlloc = this.mutate(newPopulation.GetAllocation(allocationIndex));
-            //    //if (!mutatedAlloc.AllTasksAssigned()) {
-            //    //    Debug.WriteLine("mutatedAlloc is fucked up");
-            //    //}
-            //    newPopulation.ReplaceAlloc(allocationIndex, mutatedAlloc);
-            //}
+            for (int allocationIndex = 0; allocationIndex < newPopulation.Size; allocationIndex++) {
+
+                Allocation mutatedAlloc = this.mutate(newPopulation.GetAllocation(allocationIndex));
+                if (!mutatedAlloc.AllTasksAssigned()) {
+                    Debug.WriteLine("mutatedAlloc is fucked up");
+                }
+                newPopulation.ReplaceAlloc(allocationIndex, mutatedAlloc);
+            }
 
             return newPopulation;
         }
@@ -130,31 +124,32 @@ namespace WcfService.Allocation_Algos.GA
 
         private Allocation mutate(Allocation alloc)
         {
+            Allocation mutatedAlloc = alloc.Clone();
 
-            for (int processorIndex = 0; processorIndex < alloc.ProcessorIds.Count; processorIndex++) {
-                if (Rand.Next(0, 101) < this.mutationRate) {
-                    int randomProcessorIndex = Rand.Next(0, alloc.ProcessorIds.Count);
+            if (Rand.Next(0, 101) < this.mutationRate) {
+                string taskId = "";
+                string originalProcId = "";
 
-                    Processor processor1 = alloc.GetProcessor(alloc.ProcessorIds[processorIndex]);
-                    string processor1TaskId = processor1.GetRandomTask();
+                do {
+                    // Get a random task id
+                    int randOriginalProcIndex = Rand.Next(0, alloc.ProcessorIds.Count);
+                    originalProcId = alloc.ProcessorIds[randOriginalProcIndex];
+                    Processor proc = alloc.GetProcessor(originalProcId);
+                    taskId = proc.GetRandomTask();
+                } while (taskId == "");
+            
+                // Assign the task id to another processor
+                string newProcId;
+                do {
+                    int randNewProcIndex = Rand.Next(0, alloc.ProcessorIds.Count);
+                    newProcId = mutatedAlloc.ProcessorIds[randNewProcIndex]; 
+                } while (newProcId == originalProcId);
 
-                    Processor processor2 = alloc.GetProcessor(alloc.ProcessorIds[randomProcessorIndex]);
-                    string processor2TaskId = processor2.GetRandomTask();
-
-                    if (processor2TaskId != "") {
-                        alloc.AssignTaskToProcessor(processor1.Id, processor2TaskId);
-                        alloc.RemoveTask(processor2.Id, processor2TaskId);
-                    }
-
-                    if (processor1TaskId != "") {
-                        alloc.AssignTaskToProcessor(processor2.Id, processor1TaskId);
-                        alloc.RemoveTask(processor1.Id, processor1TaskId);
-                    }
-
-                }
+                mutatedAlloc.AssignTaskToProcessor(newProcId, taskId);
+                mutatedAlloc.RemoveTask(originalProcId, taskId);
             }
 
-            return alloc;
+            return mutatedAlloc;
         }
 
         public Allocation GetBestAlloc()
@@ -230,7 +225,7 @@ namespace WcfService.Allocation_Algos.GA
                 }
             }
 
-            return fittest.Clone();
+            return fittest;
         }
 
         public List<Allocation> GetIndividuals()
@@ -278,13 +273,22 @@ namespace WcfService.Allocation_Algos.GA
 
         public Allocation Clone()
         {
-            return (Allocation)this.MemberwiseClone();
+            Allocation clonedAlloc = new Allocation(this.coefficients, this.refFreq, this.tasks, this.processorFreqs, true);
+            clonedAlloc.energyConsumed = this.energyConsumed;
+
+            var clonedProcessors = new Dictionary<string, Processor>();
+            foreach (var proc in this.processors) {
+                clonedProcessors.Add(proc.Key, proc.Value.Clone());
+            }
+            clonedAlloc.processors = clonedProcessors;
+
+            return clonedAlloc;
         }
 
         public List<string> ProcessorIds { get => Processors.Keys.ToList(); }
         public Dictionary<string, Processor> Processors { get => processors; set => processors = value; }
-        public float EnergyConsumed { get => energyConsumed; set => energyConsumed = value; }
-        public float ProgramRuntime { get => programRuntime; set => programRuntime = value; }
+        public float EnergyConsumed { get => this.getEnergyConsumed(); }
+        public float ProgramRuntime { get => this.getProgramRuntime(); set => programRuntime = value; }
         public int AssignedTasksCount {
             get {
                 int count = 0;
@@ -313,9 +317,22 @@ namespace WcfService.Allocation_Algos.GA
             return programRuntime;
         }
 
+        private float getEnergyConsumed()
+        {
+            float energyConsumed = 0;
+            foreach (var proc in processors) {
+                foreach (var taskId in proc.Value.Tasks) {
+                    // Store energy consumed by the task
+                    float runtimePerTask = this.tasks[taskId] * (this.refFreq / this.processorFreqs[proc.Key]);
+                    energyConsumed += AllocationHelper.GetEnergyConsumedPerTask(this.coefficients, this.processorFreqs[proc.Key], runtimePerTask);
+                }
+            }
+            return energyConsumed;
+        }
+
         public double GetFitness()
         {
-            return 1 / this.programRuntime;
+            return 1 / this.getProgramRuntime();
         }
 
         public Processor GetProcessor(string id)
@@ -340,14 +357,10 @@ namespace WcfService.Allocation_Algos.GA
             }
 
             proc.AssignTask(taskId);
-            
-            // Store energy consumed by the task
-            float runtimePerTask = this.tasks[taskId] * (this.refFreq / this.processorFreqs[processorId]);
-            this.energyConsumed += AllocationHelper.GetEnergyConsumedPerTask(this.coefficients, this.processorFreqs[processorId], runtimePerTask);
 
             // Store runtime of the task on the selected processor
+            float runtimePerTask = this.tasks[taskId] * (this.refFreq / this.processorFreqs[processorId]);
             proc.AddRuntime(runtimePerTask);
-            this.programRuntime = this.getProgramRuntime();
             this.processors[processorId] = proc;
         }
 
@@ -412,6 +425,21 @@ namespace WcfService.Allocation_Algos.GA
 
             return taskIds;
         }
+
+        public string GetUniqueId()
+        {
+            string id = "";
+
+            foreach (var proc in this.processors) {
+                id += proc.Key + ":";
+                proc.Value.Tasks.Sort();
+                foreach (var taskId in proc.Value.Tasks) {
+                    id += taskId + ",";
+                }
+            }
+
+            return id;
+        }
     }
 
     public class Processor
@@ -420,7 +448,6 @@ namespace WcfService.Allocation_Algos.GA
         private string id;
         private float freq;
         private float runtime;
-        private string hash;
 
         public Processor(string id, float freq)
         {
