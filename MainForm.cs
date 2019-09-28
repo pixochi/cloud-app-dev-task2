@@ -35,7 +35,9 @@ namespace GUI
         private void getAllocationsButton_Click(object sender, EventArgs e)
         {
             this.startReading();
-            string fileUrl = urlInputBox.Text.Trim();
+            string fileUrlInputBox = urlInputBox.Text.Trim();
+            string fileUrlComboxBox = filePathsComboBox.Text.Trim();
+            string fileUrl = String.IsNullOrEmpty(fileUrlInputBox) ? fileUrlComboxBox : "";
 
             try {
                 string fileContent = FileReader.ReadFromUrl(fileUrl);
@@ -73,6 +75,11 @@ namespace GUI
                 this.clearOutput();
                 this.printRow(ex.Message);
             } 
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            filePathsComboBox.SelectedIndex = 0;
         }
     }
 }

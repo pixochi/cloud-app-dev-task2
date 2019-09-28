@@ -45,9 +45,9 @@ namespace WcfService.Allocation_Algos.GA
             Allocation fittest = population.GetFittest();
             newPopulation.SaveAlloc(fittest);
 
-            //if (fittest.ProgramRuntime < this.maxDuration) {
-            //    correctAllocs.Add(population.GetFittest());
-            //}
+            if (fittest.ProgramRuntime < this.maxDuration) {
+                correctAllocs.Add(population.GetFittest());
+            }
 
             for (int allocIndex = 1; allocIndex < population.Size; allocIndex++) {
 
@@ -55,20 +55,6 @@ namespace WcfService.Allocation_Algos.GA
                     Allocation parent1 = this.tournamentSelect(population);
                     Allocation parent2 = this.tournamentSelect(population);
                     Allocation child = this.crossover(parent1, parent2);
-
-                    //if (!parent1.AllTasksAssigned()) {
-                    //    Debug.WriteLine("Parent 1 is fucked up");
-                    //}
-
-                    //if (!parent2.AllTasksAssigned()) {
-                    //    Debug.WriteLine("Parent 2 is fucked up");
-                    //}
-
-                    //if (!child.AllTasksAssigned()) {
-                    //    Debug.WriteLine("Child is fucked up");
-                    //    var a = child.AllTasksAssigned();
-
-                    //}
 
                     newPopulation.SaveAlloc(child);
                 }
@@ -100,18 +86,12 @@ namespace WcfService.Allocation_Algos.GA
 
             Allocation fittest = tournament.GetFittest();
 
-            if (!fittest.AllTasksAssigned()) {
-                Debug.WriteLine("Tournament fucked up");
-                var a = fittest.AllTasksAssigned();
-            }
-
-            return fittest;
+            return fittest.Clone();
         }
 
-        // TODO: Debug crossover!!!
         private Allocation crossover(Allocation parent1, Allocation parent2)
         {
-            Allocation child = new Allocation(this.coefficients, this.refFreq, this.tasks, this.processors);
+            Allocation child = new Allocation(this.coefficients, this.refFreq, this.tasks, this.processors, true);
             List<string> processorIds = parent1.ProcessorIds;
             int startPos = Rand.Next(0, processorIds.Count);
             int endPos = Rand.Next(startPos + 1, processorIds.Count);
@@ -144,11 +124,6 @@ namespace WcfService.Allocation_Algos.GA
                 string randomProcessorId = processorIds[Rand.Next(0, processorIds.Count)];
                 child.AssignTaskToProcessor(randomProcessorId, taskId);
             }
-
-            //if (!child.AllTasksAssigned()) {
-            //    Debug.WriteLine("crossover fucked up");
-            //    var a = child.AllTasksAssigned();
-            //}
 
             return child;
         }
@@ -195,29 +170,15 @@ namespace WcfService.Allocation_Algos.GA
 
         public List<Allocation> GetCorrectAllocs()
         {
-            var a = this.correctAllocs;
-            return a;
+            return this.correctAllocs;
         }
 
         public void Train()
         {
             Population population = new Population(20, true, this.coefficients, this.refFreq, this.tasks, this.processors);
 
-            foreach (var item in population.GetIndividuals()) {
-                if (!item.AllTasksAssigned()) {
-                    var a = 5;
-                }
-            }
-
             for (int generationIndex = 0; generationIndex < 2000; generationIndex++) {
                 population = this.evolvePopulation(population);
-
-                foreach (var item in population.GetIndividuals()) {
-                    if (!item.AllTasksAssigned()) {
-                        var b = 5;
-                    }
-                }
-
                 Debug.WriteLine(population.GetFittest().EnergyConsumed.ToString());
             }
 
@@ -238,11 +199,6 @@ namespace WcfService.Allocation_Algos.GA
             if (isInitial) {
                 for (int allocationIndex = 0; allocationIndex < populationSize; allocationIndex++) {
                     Allocation alloc = new Allocation(coefficients, refFreq, tasks, processors);
-
-                    if (!alloc.AllTasksAssigned()) {
-                        var a = alloc.AllTasksAssigned();
-                        var b = a;
-                    }
 
                     this.SaveAlloc(alloc);
                 }
@@ -266,34 +222,15 @@ namespace WcfService.Allocation_Algos.GA
         public Allocation GetFittest()
         {
 
-            foreach (var item in this.allocList) {
-                if (!item.AllTasksAssigned()) {
-                    var b = item.AllTasksAssigned();
-                    var a = b;
-                }
-            }
-
             Allocation fittest = this.GetAllocation(0);
 
             for (int allocIndex = 1; allocIndex < this.allocList.Count; allocIndex++) {
                 if (fittest.GetFitness() < this.GetAllocation(allocIndex).GetFitness()) {
                     fittest = this.GetAllocation(allocIndex);
-
-                    if (!fittest.AllTasksAssigned()) {
-                        var a = fittest.AllTasksAssigned();
-                        var b = a;
-                    }
                 }
             }
 
-            fittest = fittest.Clone();
-
-            if (!fittest.AllTasksAssigned()) {
-                var a = fittest.AllTasksAssigned();
-                var b = a;
-            }
-
-            return fittest;
+            return fittest.Clone();
         }
 
         public List<Allocation> GetIndividuals()
@@ -314,9 +251,11 @@ namespace WcfService.Allocation_Algos.GA
         private float programRuntime;
         private int assignedTasksCount;
 
-        public Allocation(List<float> coefficients, float refFreq, Dictionary <string, float> tasks, Dictionary<string, float> processorFreqs)
+        public Allocation(List<float> coefficients, float refFreq, Dictionary <string, float> tasks, Dictionary<string, float> processorFreqs, bool shouldBeEmpty = false)
         {
-            energyConsumed = 0;
+            this.energyConsumed = 0;
+            this.assignedTasksCount = 0;
+            this.programRuntime = 0;
             this.processors = new Dictionary<string, Processor>();
             this.refFreq = refFreq;
             this.coefficients = coefficients;
@@ -328,10 +267,12 @@ namespace WcfService.Allocation_Algos.GA
                 this.processors.Add(proc.Key, new Processor(proc.Key, this.processorFreqs[proc.Key]));
             }
 
-            // Randomly assign each task to a processor
-            foreach (var task in tasks) {
-                int processorIndex = Rand.Next(0, processors.Count);
-                this.AssignTaskToProcessor(processors.ElementAt(processorIndex).Key, task.Key);
+            if (!shouldBeEmpty) {
+                // Randomly assign each task to a processor
+                foreach (var task in this.tasks) {
+                    int processorIndex = Rand.Next(0, this.processors.Count);
+                    this.AssignTaskToProcessor(this.processors.ElementAt(processorIndex).Key, task.Key);
+                }
             }
         }
 
@@ -344,17 +285,17 @@ namespace WcfService.Allocation_Algos.GA
         public Dictionary<string, Processor> Processors { get => processors; set => processors = value; }
         public float EnergyConsumed { get => energyConsumed; set => energyConsumed = value; }
         public float ProgramRuntime { get => programRuntime; set => programRuntime = value; }
-        public int AssignedTasksCount { get => this.getCount(); set => assignedTasksCount = value; }
+        public int AssignedTasksCount {
+            get {
+                int count = 0;
 
-        private int getCount()
-        {
-            int count = 0;
+                foreach (var item in this.processors) {
+                    count += item.Value.Tasks.Count;
+                }
 
-            foreach (var item in this.processors) {
-                count += item.Value.Tasks.Count;
+                return count;
             }
-
-            return count;
+            set => assignedTasksCount = value;
         }
 
         private float getProgramRuntime()
@@ -374,40 +315,40 @@ namespace WcfService.Allocation_Algos.GA
 
         public double GetFitness()
         {
-            return 1 / this.ProgramRuntime;
+            return 1 / this.programRuntime;
         }
 
         public Processor GetProcessor(string id)
         {
-            return this.Processors[id];
+            return this.processors[id].Clone();
         }
 
         public void SetProcessor(string procId, Processor proc)
         {
-            this.Processors[procId] = proc;
+            this.processors[procId] = proc;
         }
 
         public void AssignTaskToProcessor(string processorId, string taskId)
         {
             Processor proc;
 
-            if (this.Processors.ContainsKey(processorId)) {
-                proc = this.Processors[processorId];
+            if (this.processors.ContainsKey(processorId)) {
+                proc = this.processors[processorId];
             }
             else {
                 proc = new Processor(processorId, this.processorFreqs[processorId]);
             }
 
             proc.AssignTask(taskId);
-            this.Processors[processorId] = proc;
-
+            
             // Store energy consumed by the task
-            float runtimePerTask = this.tasks[taskId] * (this.refFreq / processorFreqs[processorId]);
-            this.energyConsumed += AllocationHelper.GetEnergyConsumedPerTask(this.coefficients, processorFreqs[processorId], runtimePerTask);
+            float runtimePerTask = this.tasks[taskId] * (this.refFreq / this.processorFreqs[processorId]);
+            this.energyConsumed += AllocationHelper.GetEnergyConsumedPerTask(this.coefficients, this.processorFreqs[processorId], runtimePerTask);
 
             // Store runtime of the task on the selected processor
             proc.AddRuntime(runtimePerTask);
             this.programRuntime = this.getProgramRuntime();
+            this.processors[processorId] = proc;
         }
 
         public void RemoveTask(string processorId, string taskId)
@@ -419,7 +360,7 @@ namespace WcfService.Allocation_Algos.GA
 
         public bool ContainsProcessor(string processorId)
         {
-            return this.Processors.ContainsKey(processorId);
+            return this.processors.ContainsKey(processorId);
         }
 
         public bool AllTasksAssigned()
@@ -479,13 +420,14 @@ namespace WcfService.Allocation_Algos.GA
         private string id;
         private float freq;
         private float runtime;
+        private string hash;
 
         public Processor(string id, float freq)
         {
-            Tasks = new List<string>();
-            this.Id = id;
-            this.Freq = freq;
-            runtime = 0;
+            this.tasks = new List<string>();
+            this.id = id;
+            this.freq = freq;
+            this.runtime = 0;
         }
 
         public string Id { get => id; set => id = value; }
@@ -495,28 +437,38 @@ namespace WcfService.Allocation_Algos.GA
 
         public string GetRandomTask()
         {
-            if (this.Tasks.Count == 0) {
+            if (this.tasks.Count == 0) {
                 return "";
             }
 
-            int taskIndex = Rand.Next(0, this.Tasks.Count);
+            int taskIndex = Rand.Next(0, this.tasks.Count);
 
-            return this.Tasks[taskIndex];
+            return this.tasks[taskIndex];
         }
 
         public void AssignTask(string taskId)
         {
-            this.Tasks.Add(taskId);
+            if (!this.tasks.Contains(taskId)) {
+                this.tasks.Add(taskId);
+            }
         }
 
         public void RemoveTask(string taskId)
         {
-            this.Tasks.Remove(taskId);
+            this.tasks.Remove(taskId);
         }
 
         public void AddRuntime(float increaseBy)
         {
             this.runtime += increaseBy;
+        }
+
+        public Processor Clone()
+        {
+            Processor newProc = new Processor(this.id, this.freq);
+            newProc.tasks = new List<string>(this.tasks);
+            newProc.runtime = this.runtime;
+            return newProc;
         }
     }
 

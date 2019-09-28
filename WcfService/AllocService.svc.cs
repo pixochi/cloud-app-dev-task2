@@ -36,9 +36,8 @@ namespace WcfService
 
             Population pop = GAlgo.GetLastGeneration();
 
-            foreach (var alloc in GAlgo.GetCorrectAllocs()) {
+            foreach (var alloc in GAlgo.GetCorrectAllocs().Take(5)) {
                 float runtime = alloc.ProgramRuntime;
-                var a = runtime;
                 pop.SaveAlloc(alloc);
             }
 

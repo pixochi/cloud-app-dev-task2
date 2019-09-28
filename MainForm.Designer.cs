@@ -30,18 +30,19 @@
             this.mainFormOutput = new System.Windows.Forms.TextBox();
             this.urlInputBox = new System.Windows.Forms.TextBox();
             this.getAllocationsButton = new System.Windows.Forms.Button();
+            this.filePathsComboBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // mainFormOutput
             // 
             this.mainFormOutput.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.mainFormOutput.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.mainFormOutput.Location = new System.Drawing.Point(0, 28);
+            this.mainFormOutput.Location = new System.Drawing.Point(0, 59);
             this.mainFormOutput.Multiline = true;
             this.mainFormOutput.Name = "mainFormOutput";
             this.mainFormOutput.ReadOnly = true;
             this.mainFormOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.mainFormOutput.Size = new System.Drawing.Size(770, 283);
+            this.mainFormOutput.Size = new System.Drawing.Size(770, 252);
             this.mainFormOutput.TabIndex = 1;
             // 
             // urlInputBox
@@ -61,16 +62,30 @@
             this.getAllocationsButton.UseVisualStyleBackColor = true;
             this.getAllocationsButton.Click += new System.EventHandler(this.getAllocationsButton_Click);
             // 
+            // filePathsComboBox
+            // 
+            this.filePathsComboBox.FormattingEnabled = true;
+            this.filePathsComboBox.Items.AddRange(new object[] {
+            "https://sit323sa.blob.core.windows.net/at2/TestA.txt",
+            "https://sit323sa.blob.core.windows.net/at2/TestB.txt",
+            "https://sit323sa.blob.core.windows.net/at2/TestC.txt"});
+            this.filePathsComboBox.Location = new System.Drawing.Point(0, 29);
+            this.filePathsComboBox.Name = "filePathsComboBox";
+            this.filePathsComboBox.Size = new System.Drawing.Size(670, 24);
+            this.filePathsComboBox.TabIndex = 4;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(770, 311);
+            this.Controls.Add(this.filePathsComboBox);
             this.Controls.Add(this.getAllocationsButton);
             this.Controls.Add(this.urlInputBox);
             this.Controls.Add(this.mainFormOutput);
             this.Name = "MainForm";
             this.Text = "MainForm";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -80,6 +95,7 @@
         private System.Windows.Forms.TextBox mainFormOutput;
         private System.Windows.Forms.TextBox urlInputBox;
         private System.Windows.Forms.Button getAllocationsButton;
+        private System.Windows.Forms.ComboBox filePathsComboBox;
     }
 }
 
