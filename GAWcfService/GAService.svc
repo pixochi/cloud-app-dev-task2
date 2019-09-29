@@ -1,1 +1,1 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="GAWcfService.Service1" CodeBehind="GAService.svc.cs" %>
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="GAWcfService.GAService" CodeBehind="GAService.svc.cs" %>

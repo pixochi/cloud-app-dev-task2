@@ -64,7 +64,7 @@ namespace GUI
 
                 this.printRow();
                 this.printRow("From Service:");
-                var client = new HeuristicServiceReference.HeuristicServiceClient();
+                var client = new GAServiceReference.GAServiceClient();
                 var allocInput = new TaskAllocationInput(configFile.Tasks, configFile.Processors, configFile.MaxDuration, configFile.RefFrequency, configFile.Coefficients);
                 List<TaskAllocationOutput> allocations = client.GetAllocations(allocInput);
 
