@@ -23,7 +23,7 @@ namespace WcfService.Allocation_Algos.GA
         private float refFreq;
         private Population lastGeneration;
         private float maxDuration;
-        private List<Allocation> correctAllocs; 
+        private List<Allocation> correctAllocs;
 
         public GA(Dictionary<string, float> tasks, Dictionary<string, float> processors, List<float> coefficients, float refFreq, float maxDuration)
         {
@@ -190,7 +190,7 @@ namespace WcfService.Allocation_Algos.GA
     {
         private List<Allocation> allocList;
 
-        public int Size { get => allocList.Count;}
+        public int Size { get => allocList.Count; }
 
         public Population(int populationSize, bool isInitial, List<float> coefficients, float refFreq, Dictionary<string, float> tasks, Dictionary<string, float> processors)
         {
@@ -251,7 +251,7 @@ namespace WcfService.Allocation_Algos.GA
         private float programRuntime;
         private int assignedTasksCount;
 
-        public Allocation(List<float> coefficients, float refFreq, Dictionary <string, float> tasks, Dictionary<string, float> processorFreqs, bool shouldBeEmpty = false)
+        public Allocation(List<float> coefficients, float refFreq, Dictionary<string, float> tasks, Dictionary<string, float> processorFreqs, bool shouldBeEmpty = false)
         {
             this.energyConsumed = 0;
             this.assignedTasksCount = 0;
@@ -295,7 +295,8 @@ namespace WcfService.Allocation_Algos.GA
         public Dictionary<string, Processor> Processors { get => processors; set => processors = value; }
         public float EnergyConsumed { get => this.getEnergyConsumed(); }
         public float ProgramRuntime { get => this.getProgramRuntime(); set => programRuntime = value; }
-        public int AssignedTasksCount {
+        public int AssignedTasksCount
+        {
             get {
                 int count = 0;
 

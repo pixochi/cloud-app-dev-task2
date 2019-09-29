@@ -7,9 +7,9 @@ using System.ServiceModel.Web;
 using System.Text;
 using TaskAllocationLibrary;
 
-namespace AllocationHeuristicWcfService
+namespace HeuristicService
 {
-    public class Service1 : IService1
+    public class HeuristicService : IHeuristicService
     {
         public List<TaskAllocationOutput> GetAllocations(TaskAllocationInput input)
         {

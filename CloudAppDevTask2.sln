@@ -7,13 +7,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "..\..\..\..\..\sourc
 	ProjectSection(ProjectDependencies) = postProject
 		{6FBA040B-D36B-427E-AF42-7061ACB56703} = {6FBA040B-D36B-427E-AF42-7061ACB56703}
 		{CF397618-90D3-472E-A40B-CCA237AD3ABF} = {CF397618-90D3-472E-A40B-CCA237AD3ABF}
+		{7CE95483-E4AC-48BE-AB7C-52C98257298B} = {7CE95483-E4AC-48BE-AB7C-52C98257298B}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfService", "WcfService\WcfService.csproj", "{CF397618-90D3-472E-A40B-CCA237AD3ABF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskAllocationLibrary", "TaskAllocationLibrary\TaskAllocationLibrary.csproj", "{D3656459-8495-4500-B40D-1AAF214B0935}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllocationHeuristicWcfService", "AllocationHeuristicWcfService\AllocationHeuristicWcfService.csproj", "{6FBA040B-D36B-427E-AF42-7061ACB56703}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeuristicWcfService", "AllocationHeuristicWcfService\HeuristicWcfService.csproj", "{6FBA040B-D36B-427E-AF42-7061ACB56703}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GAWcfService", "GAWcfService\GAWcfService.csproj", "{7ED5D883-587D-40FA-A750-18E0DFA5AE02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeuristicService", "HeuristicService\HeuristicService.csproj", "{7CE95483-E4AC-48BE-AB7C-52C98257298B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +42,14 @@ Global
 		{6FBA040B-D36B-427E-AF42-7061ACB56703}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FBA040B-D36B-427E-AF42-7061ACB56703}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FBA040B-D36B-427E-AF42-7061ACB56703}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ED5D883-587D-40FA-A750-18E0DFA5AE02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ED5D883-587D-40FA-A750-18E0DFA5AE02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ED5D883-587D-40FA-A750-18E0DFA5AE02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ED5D883-587D-40FA-A750-18E0DFA5AE02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CE95483-E4AC-48BE-AB7C-52C98257298B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CE95483-E4AC-48BE-AB7C-52C98257298B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CE95483-E4AC-48BE-AB7C-52C98257298B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CE95483-E4AC-48BE-AB7C-52C98257298B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,12 +6,12 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6FBA040B-D36B-427E-AF42-7061ACB56703}</ProjectGuid>
+    <ProjectGuid>{7ED5D883-587D-40FA-A750-18E0DFA5AE02}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AllocationHeuristicWcfService</RootNamespace>
-    <AssemblyName>AllocationHeuristicWcfService</AssemblyName>
+    <RootNamespace>GAWcfService</RootNamespace>
+    <AssemblyName>GAWcfService</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -41,6 +41,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MedallionRandom, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MedallionRandom.1.1.0\lib\net452\MedallionRandom.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -59,54 +62,30 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="TaskAllocationLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="TaskAllocationLibrary">
       <HintPath>..\TaskAllocationLibrary\bin\Debug\TaskAllocationLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Connected Services\HeuristicService\Service1.disco" />
-    <None Include="Connected Services\HeuristicService\configuration91.svcinfo" />
-    <None Include="Connected Services\HeuristicService\configuration.svcinfo" />
-    <None Include="Connected Services\HeuristicService\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <Content Include="Service1.svc" />
+    <Content Include="GAService.svc" />
     <Content Include="Web.config" />
-    <None Include="Connected Services\HeuristicService\Service1.wsdl" />
-    <None Include="Connected Services\HeuristicService\Service1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Connected Services\HeuristicService\Service11.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Connected Services\HeuristicService\Service12.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Connected Services\HeuristicService\Service13.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <Content Include="Properties\DataSources\TaskAllocationLibrary.TaskAllocationOutput.datasource" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Connected Services\HeuristicService\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
+    <Compile Include="GA_Alg\Allocation.cs" />
+    <Compile Include="GA_Alg\GAAlg.cs" />
+    <Compile Include="GA_Alg\Population.cs" />
+    <Compile Include="GA_Alg\Processor.cs" />
+    <Compile Include="GAService.svc.cs">
+      <DependentUpon>GAService.svc</DependentUpon>
     </Compile>
-    <Compile Include="HeuristicAlg.cs" />
-    <Compile Include="HeuristicAllocation.cs" />
-    <Compile Include="Service1.svc.cs">
-      <DependentUpon>Service1.svc</DependentUpon>
-    </Compile>
-    <Compile Include="IService1.cs" />
+    <Compile Include="IGAService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -116,9 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Connected Services\HeuristicService\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -133,7 +109,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>61999</DevelopmentServerPort>
+          <DevelopmentServerPort>62474</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:8888/</IISUrl>
           <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AllocationHeuristicWcfService.HeuristicService {
+namespace HeuristicWcfService.HeuristicService {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -23,12 +23,12 @@ namespace AllocationHeuristicWcfService.HeuristicService {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IService1Channel : AllocationHeuristicWcfService.HeuristicService.IService1, System.ServiceModel.IClientChannel {
+    public interface IService1Channel : HeuristicWcfService.HeuristicService.IService1, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class Service1Client : System.ServiceModel.ClientBase<AllocationHeuristicWcfService.HeuristicService.IService1>, AllocationHeuristicWcfService.HeuristicService.IService1 {
+    public partial class Service1Client : System.ServiceModel.ClientBase<HeuristicWcfService.HeuristicService.IService1>, HeuristicWcfService.HeuristicService.IService1 {
         
         public Service1Client() {
         }

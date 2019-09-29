@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using TaskAllocationLibrary;
 
-namespace HeuristicWcfService
+namespace HeuristicService
 {
     public static class HeuristicAlg
     {

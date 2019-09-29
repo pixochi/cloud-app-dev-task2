@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="GAWcfService.Service1" CodeBehind="GAService.svc.cs" %>

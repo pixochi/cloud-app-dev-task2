@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using TaskAllocationLibrary;
 
-namespace HeuristicWcfService
+namespace HeuristicService
 {
     public class HeuristicAllocation
     {
