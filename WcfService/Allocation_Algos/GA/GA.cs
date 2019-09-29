@@ -35,7 +35,7 @@ namespace WcfService.Allocation_Algos.GA
             this.correctAllocs = new List<Allocation>();
         }
 
-        public Population evolvePopulation(Population population)
+        private Population evolvePopulation(Population population)
         {
             Population newPopulation = new Population(population.Size, false, this.coefficients, this.refFreq, this.tasks, this.processors);
 
@@ -278,8 +278,9 @@ namespace WcfService.Allocation_Algos.GA
 
         public Allocation Clone()
         {
-            Allocation clonedAlloc = new Allocation(this.coefficients, this.refFreq, this.tasks, this.processorFreqs, true);
-            clonedAlloc.energyConsumed = this.energyConsumed;
+            var clonedAlloc = new Allocation(this.coefficients, this.refFreq, this.tasks, this.processorFreqs, true) {
+                energyConsumed = this.energyConsumed
+            };
 
             var clonedProcessors = new Dictionary<string, Processor>();
             foreach (var proc in this.processors) {

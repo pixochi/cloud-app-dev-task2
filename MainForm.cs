@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TaskAllocationLibrary;
 
 namespace GUI
 {
@@ -63,9 +64,9 @@ namespace GUI
 
                 this.printRow();
                 this.printRow("From Service:");
-                var client = new AllocServiceReference.AllocServiceClient();
-                var allocInput = new AllocServiceReference.AllocInput(configFile.Tasks, configFile.Processors, configFile.MaxDuration, configFile.RefFrequency, configFile.Coefficients);
-                List<AllocServiceReference.AllocOutput> allocations = client.GetAllocationsGA(allocInput);
+                var client = new HeuristicServiceReference.Service1Client();
+                var allocInput = new TaskAllocationInput(configFile.Tasks, configFile.Processors, configFile.MaxDuration, configFile.RefFrequency, configFile.Coefficients);
+                List<TaskAllocationOutput> allocations = client.GetAllocations(allocInput);
 
                 string formattedAllocations = Visualizer.Allocations(allocations);
                 this.printRow(formattedAllocations);
