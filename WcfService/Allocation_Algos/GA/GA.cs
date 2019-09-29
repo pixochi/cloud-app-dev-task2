@@ -10,11 +10,13 @@ namespace WcfService.Allocation_Algos.GA
 {
     public class GA
     {
-        private int MAX_GENERATIONS = 30000;
-        private float MUTATION_RATE = 0.08f;
-        private int POPULATION_SIZE = 30;
-        private int TOURNAMENT_SIZE = 15;
-        private float CROSSOVER_RATE = 0.75f;
+        private static int MINUTE = 1000 * 60;
+        private static int MAX_TRAINING_DURATION_MS = 5 * MINUTE;
+        private static float MUTATION_RATE = 0.05f;
+        private static float CROSSOVER_RATE = 0.7f;
+        private static int POPULATION_SIZE = 30;
+        private static int TOURNAMENT_SIZE = 15;
+        private static int MUTATE_TASKS_COUNT = 1;
         private Dictionary<string, float> tasks;
         private Dictionary<string, float> processors;
         private List<float> coefficients;
@@ -46,7 +48,7 @@ namespace WcfService.Allocation_Algos.GA
 
             for (int allocIndex = 1; allocIndex < population.Size; allocIndex++) {
 
-                if (Rand.NextDouble() < this.CROSSOVER_RATE) {
+                if (Rand.NextDouble() < CROSSOVER_RATE) {
                     Allocation parent1 = this.tournamentSelect(population);
                     Allocation parent2 = this.tournamentSelect(population);
                     Allocation child = this.crossover(parent1, parent2);
@@ -69,9 +71,9 @@ namespace WcfService.Allocation_Algos.GA
 
         private Allocation tournamentSelect(Population population)
         {
-            Population tournament = new Population(this.TOURNAMENT_SIZE, false, this.coefficients, this.refFreq, this.tasks, this.processors);
+            Population tournament = new Population(TOURNAMENT_SIZE, false, this.coefficients, this.refFreq, this.tasks, this.processors);
 
-            for (int allocationIndex = 0; allocationIndex < this.TOURNAMENT_SIZE; allocationIndex++) {
+            for (int allocationIndex = 0; allocationIndex < TOURNAMENT_SIZE; allocationIndex++) {
                 int randomAllocationIndex = Rand.Next(0, population.Size);
                 tournament.SaveAlloc(population.GetAllocation(randomAllocationIndex));
             }
@@ -124,9 +126,8 @@ namespace WcfService.Allocation_Algos.GA
         {
             Allocation mutatedAlloc = alloc.Clone();
 
-            if (Rand.NextDouble() < this.MUTATION_RATE) {
-                int switchTasksCount = Rand.Next(1, 3);
-                for (int _ = 0; _ < switchTasksCount; _++) {
+            if (Rand.NextDouble() < MUTATION_RATE) {
+                for (int _ = 0; _ < MUTATE_TASKS_COUNT; _++) {
                     string taskId = "";
                     string originalProcId = "";
 
@@ -171,9 +172,12 @@ namespace WcfService.Allocation_Algos.GA
 
         public void Train()
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             Population population = new Population(POPULATION_SIZE, true, this.coefficients, this.refFreq, this.tasks, this.processors);
 
-            for (int generationIndex = 0; generationIndex < MAX_GENERATIONS; generationIndex++) {
+            while (stopWatch.ElapsedMilliseconds < MAX_TRAINING_DURATION_MS) {
                 population = this.evolvePopulation(population);
                 //Debug.WriteLine(population.GetFittest().EnergyConsumed.ToString());
             }
