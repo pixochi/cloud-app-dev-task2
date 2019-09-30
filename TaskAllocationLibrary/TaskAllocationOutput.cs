@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TaskAllocationLibrary
 {
-    // Structure of an allocation sent in response
+    // Structure of an allocation sent in responses
 
     [DataContract]
     public class TaskAllocationOutput
