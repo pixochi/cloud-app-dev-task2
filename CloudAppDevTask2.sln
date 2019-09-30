@@ -5,18 +5,18 @@ VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "..\..\..\..\..\source\repos\GUI\GUI\GUI.csproj", "{1FB37D34-6F64-431A-B9A8-BD47B6212005}"
 	ProjectSection(ProjectDependencies) = postProject
-		{CF397618-90D3-472E-A40B-CCA237AD3ABF} = {CF397618-90D3-472E-A40B-CCA237AD3ABF}
+		{2E793E01-8300-4A44-9140-53653F95944B} = {2E793E01-8300-4A44-9140-53653F95944B}
 		{7CE95483-E4AC-48BE-AB7C-52C98257298B} = {7CE95483-E4AC-48BE-AB7C-52C98257298B}
 		{7ED5D883-587D-40FA-A750-18E0DFA5AE02} = {7ED5D883-587D-40FA-A750-18E0DFA5AE02}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfService", "WcfService\WcfService.csproj", "{CF397618-90D3-472E-A40B-CCA237AD3ABF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskAllocationLibrary", "TaskAllocationLibrary\TaskAllocationLibrary.csproj", "{D3656459-8495-4500-B40D-1AAF214B0935}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GAWcfService", "GAWcfService\GAWcfService.csproj", "{7ED5D883-587D-40FA-A750-18E0DFA5AE02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeuristicService", "HeuristicService\HeuristicService.csproj", "{7CE95483-E4AC-48BE-AB7C-52C98257298B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SortMidService", "SortMidService\SortMidService.csproj", "{2E793E01-8300-4A44-9140-53653F95944B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +28,6 @@ Global
 		{1FB37D34-6F64-431A-B9A8-BD47B6212005}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FB37D34-6F64-431A-B9A8-BD47B6212005}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FB37D34-6F64-431A-B9A8-BD47B6212005}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF397618-90D3-472E-A40B-CCA237AD3ABF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF397618-90D3-472E-A40B-CCA237AD3ABF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF397618-90D3-472E-A40B-CCA237AD3ABF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF397618-90D3-472E-A40B-CCA237AD3ABF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D3656459-8495-4500-B40D-1AAF214B0935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D3656459-8495-4500-B40D-1AAF214B0935}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3656459-8495-4500-B40D-1AAF214B0935}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,6 +40,10 @@ Global
 		{7CE95483-E4AC-48BE-AB7C-52C98257298B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CE95483-E4AC-48BE-AB7C-52C98257298B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CE95483-E4AC-48BE-AB7C-52C98257298B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E793E01-8300-4A44-9140-53653F95944B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E793E01-8300-4A44-9140-53653F95944B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E793E01-8300-4A44-9140-53653F95944B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E793E01-8300-4A44-9140-53653F95944B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

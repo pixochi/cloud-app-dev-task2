@@ -5,16 +5,15 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
-using System.Threading.Tasks;
 using TaskAllocationLibrary;
 
-namespace HeuristicService
+namespace SortMidService
 {
-    public class HeuristicService : IHeuristicService
+    public class Service1 : ISortMidService
     {
         public List<TaskAllocationOutput> GetAllocations(TaskAllocationInput input)
         {
-            return HeuristicAlg.GetAllocations(input);
+            return SortMidAlg.SortMidAlg.GetAllocations(input);
         }
     }
 }
