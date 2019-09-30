@@ -3,6 +3,7 @@ using TaskAllocationLibrary;
 
 namespace SortMidService.SortMidAlg
 {
+    // Structure of an allocation for SortMid algorithm
     public class Allocation
     {
         private Dictionary<string, List<string>> processors;
@@ -28,6 +29,7 @@ namespace SortMidService.SortMidAlg
         public Dictionary<string, List<string>> Processors { get => processors; set => processors = value; }
         public float EnergyConsumed { get => energyConsumed; set => energyConsumed = value; }
 
+        // Select a processor on which a given task will run
         public void AssignTaskToProcessor(string taskId, string processorId, float runtime)
         {
             List<string> taskIds;

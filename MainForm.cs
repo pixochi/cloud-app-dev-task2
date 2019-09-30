@@ -40,9 +40,10 @@ namespace GUI
             mainFormOutput.Text += $"Please wait for 5 minutes...";
         }
 
-        private void printEndpointAddress(ServiceEndpoint endpoint)
+        // Select the first config file in comboBox by default
+        private void MainForm_Load(object sender, EventArgs e)
         {
-            this.printRow(endpoint.Address.ToString());
+            filePathsComboBox.SelectedIndex = 0;
         }
 
         // Get allocations from services on button-click
@@ -54,23 +55,26 @@ namespace GUI
             string fileUrl = String.IsNullOrEmpty(fileUrlInputBox) ? fileUrlComboxBox : "";
 
             try {
+
+                // Read a remote config file
                 string fileContent = FileReader.ReadFromUrl(fileUrl);
                 this.clearOutput();
 
+                // Parse the config file
                 ConfigFile configFile = new ConfigFile(fileContent);
                 var allocInput = new TaskAllocationInput(configFile.Tasks, configFile.Processors, configFile.MaxDuration, configFile.RefFrequency, configFile.Coefficients);
                 var allocations = new List<TaskAllocationOutput>();
 
-                // All clients
-                var GAServiceClient = new GAServiceReference.GAServiceClient();
-                var heuristicClient = new HeuristicServiceReference.HeuristicServiceClient();
-                var sortMidClient = new SortMidServiceReference.SortMidServiceClient();
+                // Create all service clients
+                var GAServiceClient = new AWSGAServiceReference.GAServiceClient();
+                var heuristicClient = new AWSHeuristicServiceReference.HeuristicServiceClient();
+                var sortMidClient = new AWSSortMidServiceReference.SortMidServiceClient();
 
-                // Get allocations from GA Service 1
-                var GATask = Task.Factory.StartNew(() =>
+                // Get allocations from SortMid Service
+                var sortMidTask = Task.Factory.StartNew(() =>
                 {
-                    var GAAllocc = GAServiceClient.GetAllocations(allocInput);
-                    allocations.AddRange(GAAllocc);
+                    var sortMidAllocs = sortMidClient.GetAllocations(allocInput);
+                    allocations.AddRange(sortMidAllocs);
                 });
 
                 // Get allocations from Heuristic Service
@@ -80,20 +84,18 @@ namespace GUI
                     allocations.AddRange(heuristicAllocs);
                 });
 
-                // Get allocations from SortMid Service
-                var sortMidTask = Task.Factory.StartNew(() =>
+                // Get allocations from GA Service
+                var GATask = Task.Factory.StartNew(() =>
                 {
-                    var sortMidAllocs = sortMidClient.GetAllocations(allocInput);
-                    allocations.AddRange(sortMidAllocs);
+                    var GAAllocs = GAServiceClient.GetAllocations(allocInput);
+                    allocations.AddRange(GAAllocs);
                 });
 
                 // UI feedback
-                this.printEndpointAddress(GAServiceClient.Endpoint);
-                this.printEndpointAddress(heuristicClient.Endpoint);
-                this.printEndpointAddress(sortMidClient.Endpoint);
                 this.printWaitingTime();
 
-                await Task.WhenAll(GATask, heuristicTask, sortMidTask);
+                // Wait for response from all the services
+                await Task.WhenAll(sortMidTask, GATask, heuristicTask);
 
                 // Print correct allocations
                 var topAllocations = allocations.OrderBy(a => a.EnergyConsumed).Take(3).ToList();
@@ -101,17 +103,16 @@ namespace GUI
                 this.printRow();
                 this.printRow(formattedAllocations);
 
+                // Close the service clients
+                GAServiceClient.Close();
+                heuristicClient.Close();
+                GAServiceClient.Close();
+
             }
             catch (Exception ex) {
                 this.clearOutput();
                 this.printRow(ex.Message);
             }
-        }
-
-        // Select the first config file by default
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            filePathsComboBox.SelectedIndex = 0;
         }
     }
 }

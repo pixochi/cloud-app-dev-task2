@@ -2,6 +2,7 @@
 
 namespace GAWcfService.GA_Alg
 {
+    // Represents a population of Allocations
     public class Population
     {
         private List<Allocation> allocList;
@@ -25,6 +26,7 @@ namespace GAWcfService.GA_Alg
         {
             this.allocList.Add(alloc);
         }
+
         public void ReplaceAlloc(int allocIndex, Allocation alloc)
         {
             this.allocList[allocIndex] = alloc;
@@ -37,7 +39,6 @@ namespace GAWcfService.GA_Alg
 
         public Allocation GetFittest()
         {
-
             Allocation fittest = this.GetAllocation(0);
 
             for (int allocIndex = 1; allocIndex < this.allocList.Count; allocIndex++) {
@@ -53,6 +54,5 @@ namespace GAWcfService.GA_Alg
         {
             return this.allocList;
         }
-
     }
 }

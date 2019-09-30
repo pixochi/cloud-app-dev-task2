@@ -8,6 +8,7 @@ using TaskAllocationLibrary;
 
 namespace GAWcfService.GA_Alg
 {
+    // Genetic algorithm for optimal task allocations
     public class GAAlg
     {
         private static float MUTATION_RATE = 0.05f;
@@ -38,7 +39,7 @@ namespace GAWcfService.GA_Alg
             return this.lastGeneration;
         }
 
-
+        // Evolves the initial population over a certain number of generations
         public void Train()
         {
             Stopwatch stopWatch = new Stopwatch();
@@ -48,19 +49,15 @@ namespace GAWcfService.GA_Alg
 
             while (stopWatch.ElapsedMilliseconds < Constants.MAX_PROGRAM_DURATION_MS) {
                 population = this.evolvePopulation(population);
-                //Debug.WriteLine(population.GetFittest().EnergyConsumed.ToString());
             }
 
             this.lastGeneration = population;
         }
 
+        // Finds unique correct allocations
         public List<TaskAllocationOutput> GetCorrectAllocs()
-        {
-            
+        { 
             List<TaskAllocationOutput> allocations = new List<TaskAllocationOutput>();
-
-            Population pop = this.GetLastGeneration();
-
             var uniqueCorrectAllocs = this.correctAllocs.GroupBy(elem => elem.GetUniqueId()).Select(group => group.First());
 
             foreach (var alloc in uniqueCorrectAllocs) {
@@ -76,6 +73,7 @@ namespace GAWcfService.GA_Alg
             return allocations;
         } 
 
+        // Evolves a population over 1 generation
         private Population evolvePopulation(Population population)
         {
             Population newPopulation = new Population(population.Size, false, this.coefficients, this.refFreq, this.tasks, this.processors);
@@ -110,6 +108,7 @@ namespace GAWcfService.GA_Alg
             return newPopulation;
         }
 
+        // Finds the fittest individual from a subset of population
         private Allocation tournamentSelect(Population population)
         {
             Population tournament = new Population(TOURNAMENT_SIZE, false, this.coefficients, this.refFreq, this.tasks, this.processors);
@@ -124,6 +123,7 @@ namespace GAWcfService.GA_Alg
             return fittest;
         }
 
+        // Creates a child from 2 provided parents
         private Allocation crossover(Allocation parent1, Allocation parent2)
         {
             Allocation child = new Allocation(this.coefficients, this.refFreq, this.tasks, this.processors, true);
@@ -142,9 +142,6 @@ namespace GAWcfService.GA_Alg
                 child.SetProcessor(processorId, parent1.GetProcessor(processorId));
             }
 
-            // Remove duplicated tasks
-            //parent2.RemoveDuplicatedTasks(child.GetAssignedTasks());
-
             // Select processors from parent 2
             for (int processorIndex = 0; processorIndex < processorIds.Count; processorIndex++) {
                 string processorId = processorIds[processorIndex];
@@ -154,6 +151,7 @@ namespace GAWcfService.GA_Alg
                 }
             }
 
+            // Assign tasks that don't belong to any processor yet
             var unassignedTasks = child.GetUnassignedTasks();
             foreach (var taskId in unassignedTasks) {
                 string randomProcessorId = processorIds[Rand.Next(0, processorIds.Count)];
@@ -163,6 +161,7 @@ namespace GAWcfService.GA_Alg
             return child;
         }
 
+        // Simulate a genetic mutation of individuals
         private Allocation mutate(Allocation alloc)
         {
             Allocation mutatedAlloc = alloc.Clone();

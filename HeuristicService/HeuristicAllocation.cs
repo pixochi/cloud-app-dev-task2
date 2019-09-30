@@ -6,6 +6,7 @@ using TaskAllocationLibrary;
 
 namespace HeuristicService
 {
+    // Structure of an allocation for Heuristic algorithm
     public class HeuristicAllocation
     {
         private Dictionary<string, List<string>> processors;

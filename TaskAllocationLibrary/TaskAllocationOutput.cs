@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TaskAllocationLibrary
 {
+    // Structure of an allocation sent in response
+
     [DataContract]
     public class TaskAllocationOutput
     {

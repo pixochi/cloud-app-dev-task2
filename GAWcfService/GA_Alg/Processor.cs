@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace GAWcfService.GA_Alg
 {
+    // Structure that handles assignment of tasks on a single processor
     public class Processor
     {
         private List<string> tasks;

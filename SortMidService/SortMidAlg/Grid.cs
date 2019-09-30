@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace SortMidService.SortMidAlg
 {
+    // Optimal structure to manipulate tasks and processor using SortMid algorithm
     public class Grid
     {
         private Dictionary<string, Dictionary<string, float>> content;

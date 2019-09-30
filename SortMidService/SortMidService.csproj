@@ -59,7 +59,8 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="TaskAllocationLibrary">
+    <Reference Include="TaskAllocationLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\TaskAllocationLibrary\bin\Debug\TaskAllocationLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>

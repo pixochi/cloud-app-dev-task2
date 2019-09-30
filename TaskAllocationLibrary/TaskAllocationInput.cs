@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace TaskAllocationLibrary
 {
+    // Input format from a client
     [DataContract]
     public class TaskAllocationInput
     {

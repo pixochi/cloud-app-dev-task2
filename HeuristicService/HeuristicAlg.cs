@@ -7,10 +7,12 @@ using TaskAllocationLibrary;
 
 namespace HeuristicService
 {
+    // Assigns tasks with the highest runtime to processors with the highest frequency.
     public static class HeuristicAlg
     {
         private static float TIME_STEP = 0.0001f;
         private static uint MAX_ALLOCATIONS = 1000;
+
         public static List<TaskAllocationOutput> GetAllocations(TaskAllocationInput allocInput)
         {
             Stopwatch stopWatch = new Stopwatch();
