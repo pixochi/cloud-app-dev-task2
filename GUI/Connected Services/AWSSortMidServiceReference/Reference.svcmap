@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="5ab0d222-d967-477c-a284-9708d494df9f" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>true</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.Generic.List`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/SortMidService/SortMidService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="SortMidService.xsd" MetadataType="Schema" ID="4f75e535-5994-4957-82ce-2ced16bb28d5" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/SortMidService/SortMidService.svc?xsd=xsd2" />
+    <MetadataFile FileName="SortMidService1.xsd" MetadataType="Schema" ID="cf8412fb-b3c6-4f58-b866-56e245c36a84" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/SortMidService/SortMidService.svc?xsd=xsd1" />
+    <MetadataFile FileName="SortMidService.disco" MetadataType="Disco" ID="45f7f5ff-17ff-47a8-83b0-3a89a903e07a" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/SortMidService/SortMidService.svc?disco" />
+    <MetadataFile FileName="Service1.wsdl" MetadataType="Wsdl" ID="d89de21a-e897-4466-a732-81630f5adf38" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/SortMidService/SortMidService.svc?wsdl" />
+    <MetadataFile FileName="SortMidService2.xsd" MetadataType="Schema" ID="458a21dd-fcd1-408b-97f3-52a3a9caae69" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/SortMidService/SortMidService.svc?xsd=xsd0" />
+    <MetadataFile FileName="SortMidService3.xsd" MetadataType="Schema" ID="6e7d05e3-887d-4bb3-a645-fbfdb44abdc0" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/SortMidService/SortMidService.svc?xsd=xsd3" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

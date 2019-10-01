@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configurationSnapshot xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:schemas-microsoft-com:xml-wcfconfigurationsnapshot">
+  <behaviors />
+  <bindings>
+    <binding digest="System.ServiceModel.Configuration.BasicHttpBindingElement, System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089:&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data name=&quot;BasicHttpBinding_ISortMidService&quot; /&gt;" bindingType="basicHttpBinding" name="BasicHttpBinding_ISortMidService" />
+  </bindings>
+  <endpoints>
+    <endpoint normalizedDigest="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data address=&quot;http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/SortMidService/SortMidService.svc&quot; binding=&quot;basicHttpBinding&quot; bindingConfiguration=&quot;BasicHttpBinding_ISortMidService&quot; contract=&quot;AWSSortMidServiceReference.ISortMidService&quot; name=&quot;BasicHttpBinding_ISortMidService&quot; /&gt;" digest="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data address=&quot;http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/SortMidService/SortMidService.svc&quot; binding=&quot;basicHttpBinding&quot; bindingConfiguration=&quot;BasicHttpBinding_ISortMidService&quot; contract=&quot;AWSSortMidServiceReference.ISortMidService&quot; name=&quot;BasicHttpBinding_ISortMidService&quot; /&gt;" contractName="AWSSortMidServiceReference.ISortMidService" name="BasicHttpBinding_ISortMidService" />
+  </endpoints>
+</configurationSnapshot>

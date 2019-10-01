@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="4764c749-3b1c-4049-8177-a4c8867c5103" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>true</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.Generic.List`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/GAWcfService/GAService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="GAService.xsd" MetadataType="Schema" ID="3571f832-0210-4bec-ae0f-d2cadd820204" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/GAWcfService/GAService.svc?xsd=xsd2" />
+    <MetadataFile FileName="GAService1.xsd" MetadataType="Schema" ID="7a30e5e2-4e65-4bd3-9dbb-a67dc0ac2574" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/GAWcfService/GAService.svc?xsd=xsd0" />
+    <MetadataFile FileName="GAService.disco" MetadataType="Disco" ID="17a54792-cb53-466f-8f02-c14ea7cf6996" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/GAWcfService/GAService.svc?disco" />
+    <MetadataFile FileName="GAService2.xsd" MetadataType="Schema" ID="53a404f2-086a-4bde-95a9-3e595b87fea6" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/GAWcfService/GAService.svc?xsd=xsd3" />
+    <MetadataFile FileName="GAService3.xsd" MetadataType="Schema" ID="61834d94-d68c-4f7c-879c-2ae4e0de2c41" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/GAWcfService/GAService.svc?xsd=xsd1" />
+    <MetadataFile FileName="GAService.wsdl" MetadataType="Wsdl" ID="b9ba73ed-29f0-40d2-8d61-81204c195c24" SourceId="1" SourceUrl="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/GAWcfService/GAService.svc?wsdl" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

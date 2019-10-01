@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://task-allocations-lb-213395435.us-east-1.elb.amazonaws.com/GAWcfService/GAService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/TaskAllocationLibrary" />
+  <xs:element name="GetAllocations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/TaskAllocationLibrary" minOccurs="0" name="input" nillable="true" type="q1:TaskAllocationInput" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllocationsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/TaskAllocationLibrary" minOccurs="0" name="GetAllocationsResult" nillable="true" type="q2:ArrayOfTaskAllocationOutput" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
